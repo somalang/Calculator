@@ -14,6 +14,7 @@ WPF의 MVVM 패턴을 적용하여 다양한 기능을 제공하는 계산기를
 - 상속 구조(Base Calculator)와 연산자 재정의 구현
 - 깔끔한 UI와 코드 가독성, 표준 준수
 
+개발 순서 :  Models → Engine → Services → ViewModels → Views → Tests
 ***
 
 ## 주요 기능
