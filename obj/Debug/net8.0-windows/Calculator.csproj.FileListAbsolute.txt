@@ -3,7 +3,6 @@ C:\Users\sohyun\source\repos\Calculator\bin\Debug\net8.0-windows\Calculator.deps
 C:\Users\sohyun\source\repos\Calculator\bin\Debug\net8.0-windows\Calculator.runtimeconfig.json
 C:\Users\sohyun\source\repos\Calculator\bin\Debug\net8.0-windows\Calculator.dll
 C:\Users\sohyun\source\repos\Calculator\bin\Debug\net8.0-windows\Calculator.pdb
-C:\Users\sohyun\source\repos\Calculator\obj\Debug\net8.0-windows\App.baml
 C:\Users\sohyun\source\repos\Calculator\obj\Debug\net8.0-windows\UI\CalculatorView.g.cs
 C:\Users\sohyun\source\repos\Calculator\obj\Debug\net8.0-windows\App.g.cs
 C:\Users\sohyun\source\repos\Calculator\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs

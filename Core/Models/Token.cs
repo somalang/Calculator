@@ -22,7 +22,6 @@
         public int Precedence { get; set; }
         public Associativity Associativity { get; set; }
         public int Position { get; set; }
-
         public Token(TokenType type, string value, int position = 0)
         {
             Type = type;
@@ -30,7 +29,6 @@
             Position = position;
             SetPrecedenceAndAssociativity();
         }
-
         private void SetPrecedenceAndAssociativity()
         {
             switch (Value)
