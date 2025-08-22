@@ -10,7 +10,6 @@ namespace Calculator.Core.Engine
         public CalcValue Evaluate(List<Token> rpnTokens)
         {
             var stack = new Stack<CalcValue>();
-
             foreach (var token in rpnTokens)
             {
                 switch (token.Type)
@@ -42,10 +41,8 @@ namespace Calculator.Core.Engine
                         break;
                 }
             }
-
             return stack.Count > 0 ? stack.Pop() : CalcValue.ZERO;
         }
-
         private CalcValue ApplyOperator(string operatorSymbol, CalcValue left, CalcValue right)
         {
             return operatorSymbol switch
@@ -57,7 +54,6 @@ namespace Calculator.Core.Engine
                 _ => throw new NotSupportedException($"지원하지 않는 연산자: {operatorSymbol}")
             };
         }
-
         private CalcValue ApplyFunction(string function, CalcValue operand)
         {
             return function switch

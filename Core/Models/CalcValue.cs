@@ -4,17 +4,11 @@ namespace Calculator.Core.Models
 {
     public class CalcValue : IComparable<CalcValue>, IEquatable<CalcValue>
     {
-        // 상수
         public static readonly CalcValue ZERO = new CalcValue(0);
         public static readonly CalcValue ONE = new CalcValue(1);
-
-        // 필드
         private readonly decimal value;
-
-        // 속성
         public decimal Value => value;
 
-        // 생성자
         public CalcValue(decimal value)
         {
             this.value = value;

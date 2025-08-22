@@ -53,7 +53,7 @@ namespace Calculator.UI.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Calculator;V1.0.0.0;component/ui/calculatorview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Calculator;component/ui/calculatorview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\UI\CalculatorView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

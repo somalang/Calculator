@@ -14,7 +14,6 @@ namespace Calculator.UI.ViewModels
         private string currentInput;
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
-
         // 속성
         public string Display
         {
@@ -25,7 +24,6 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-
         public string CurrentInput
         {
             get => currentInput;
@@ -35,7 +33,6 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-
         // 명령
         public ICommand NumberCommand { get; }
         public ICommand OperatorCommand { get; }
@@ -56,7 +53,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput = string.Empty;
             isResultDisplayed = false;
 
-            // 명령 초기화
             NumberCommand = new RelayCommand(ExecuteNumber);
             OperatorCommand = new RelayCommand(ExecuteOperator);
             EqualsCommand = new RelayCommand(ExecuteEquals);
@@ -68,8 +64,6 @@ namespace Calculator.UI.ViewModels
             LeftParenCommand = new RelayCommand(ExecuteLeftParen);
             RightParenCommand = new RelayCommand(ExecuteRightParen);
         }
-
-        // Private 메서드
         private void ExecuteNumber(object parameter)
         {
             string number = parameter?.ToString();
@@ -87,7 +81,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput += number;
             Display = CurrentInput;
         }
-
         private void ExecuteOperator(object parameter)
         {
             string operatorSymbol = parameter?.ToString();
@@ -104,7 +97,6 @@ namespace Calculator.UI.ViewModels
                 Display = CurrentInput;
             }
         }
-
         private void ExecuteEquals(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -123,17 +115,30 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
             }
         }
-
         private void ExecuteClear(object parameter)
         {
-            Display = "0";
-            CurrentInput = string.Empty;
+            if (string.IsNullOrEmpty(CurrentInput)) return;
+
+            // 공백 기준으로 쪼개고 마지막 토큰만 제거
+            var tokens = CurrentInput.Trim().Split(' ');
+            if (tokens.Length > 1)
+            {
+                CurrentInput = string.Join(" ", tokens, 0, tokens.Length - 1);
+            }
+            else
+            {
+                CurrentInput = string.Empty;
+            }
+
+            Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
             isResultDisplayed = false;
         }
 
         private void ExecuteClearAll(object parameter)
         {
-            ExecuteClear(null);
+            Display = "0";
+            CurrentInput = string.Empty;
+            isResultDisplayed = false;
         }
 
         private void ExecuteBackspace(object parameter)
@@ -143,7 +148,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput = CurrentInput.Length > 1 ? CurrentInput[..^1] : string.Empty;
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
-
         private void ExecuteSqrt(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -151,7 +155,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput = $"sqrt({CurrentInput})";
             Display = CurrentInput;
         }
-
         private void ExecuteSquare(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -159,7 +162,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput = $"sqr({CurrentInput})";
             Display = CurrentInput;
         }
-
         private void ExecuteLeftParen(object parameter)
         {
             if (isResultDisplayed)
@@ -171,7 +173,6 @@ namespace Calculator.UI.ViewModels
             CurrentInput += "(";
             Display = CurrentInput;
         }
-
         private void ExecuteRightParen(object parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
