@@ -155,7 +155,8 @@
                         CommandParameter="+" Style="{StaticResource OperatorButtonStyle}"/>
 
                 <!-- +/- 커맨드 추가해야 함 -->
-                <Button Content="+/-" Style="{StaticResource NumberButtonStyle}"/>
+                <Button Content="+/-" Command="{Binding ToggleSignCommand}"
+                        CommandParameter"+/-" Style="{StaticResource NumberButtonStyle}"/>
                 <Button Content="0" Command="{Binding NumberCommand}" 
                         CommandParameter="0" Style="{StaticResource NumberButtonStyle}"/>
                 <Button Content="." Command="{Binding NumberCommand}" 
