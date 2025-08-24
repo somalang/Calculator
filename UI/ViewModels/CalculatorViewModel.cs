@@ -44,6 +44,8 @@ namespace Calculator.UI.ViewModels
         public ICommand SquareCommand { get; }
         public ICommand LeftParenCommand { get; }
         public ICommand RightParenCommand { get; }
+        public ICommand ToggleSignCommand { get; }
+
 
         // 생성자
         public CalculatorViewModel()
@@ -63,6 +65,7 @@ namespace Calculator.UI.ViewModels
             SquareCommand = new RelayCommand(ExecuteSquare);
             LeftParenCommand = new RelayCommand(ExecuteLeftParen);
             RightParenCommand = new RelayCommand(ExecuteRightParen);
+            ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
         }
         private void ExecuteNumber(object parameter)
         {
