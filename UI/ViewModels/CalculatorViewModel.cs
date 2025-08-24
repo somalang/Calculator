@@ -183,6 +183,25 @@ namespace Calculator.UI.ViewModels
             CurrentInput += ")";
             Display = CurrentInput;
         }
+        private void ExecuteToggleSign(object parameter)
+        {
+            if (string.IsNullOrEmpty(CurrentInput)) return;
+        
+            var tokens = CurrentInput.Trim().Split(' ');
+            string lastToken = tokens[^1];
+        
+            if (decimal.TryParse(lastToken, out _))
+            {
+                // 음수면 양수로, 양수면 음수로
+                if (lastToken.StartsWith("-", StringComparison.Ordinal))
+                    tokens[^1] = lastToken.Substring(1);
+                else
+                    tokens[^1] = "-" + lastToken;
+        
+                CurrentInput = string.Join(" ", tokens);
+                Display = CurrentInput;
+            }
+        }
 
         // INotifyPropertyChanged 구현
         public event PropertyChangedEventHandler PropertyChanged;
