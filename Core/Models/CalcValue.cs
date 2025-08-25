@@ -26,6 +26,68 @@ namespace Calculator.Core.Models
             return new CalcValue(value);
         }
 
+        // 연산자 재정의 (과제 조건)
+        public static CalcValue operator +(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) throw new ArgumentNullException();
+            return new CalcValue(left.value + right.value);
+        }
+
+        public static CalcValue operator -(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) throw new ArgumentNullException();
+            return new CalcValue(left.value - right.value);
+        }
+
+        public static CalcValue operator *(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) throw new ArgumentNullException();
+            return new CalcValue(left.value * right.value);
+        }
+
+        public static CalcValue operator /(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) throw new ArgumentNullException();
+            if (right.value == 0) throw new DivideByZeroException("0으로 나눌 수 없습니다");
+            return new CalcValue(left.value / right.value);
+        }
+
+        // 단항 연산자
+        public static CalcValue operator -(CalcValue value)
+        {
+            if (value == null) throw new ArgumentNullException();
+            return new CalcValue(-value.value);
+        }
+
+        public static CalcValue operator +(CalcValue value)
+        {
+            if (value == null) throw new ArgumentNullException();
+            return new CalcValue(+value.value);
+        }
+
+        // 기타 연산 메서드들 (Evaluator에서 사용)
+        public CalcValue Sqrt()
+        {
+            if (value < 0) throw new InvalidOperationException("음수의 제곱근을 구할 수 없습니다");
+            return new CalcValue((decimal)Math.Sqrt((double)value));
+        }
+
+        public CalcValue Square()
+        {
+            return new CalcValue(value * value);
+        }
+
+        public CalcValue Reciprocal()
+        {
+            if (value == 0) throw new DivideByZeroException("0의 역수를 구할 수 없습니다");
+            return new CalcValue(1 / value);
+        }
+
+        public CalcValue Percent()
+        {
+            return new CalcValue(value / 100);
+        }
+
         // 비교 연산자
         public static bool operator ==(CalcValue left, CalcValue right)
         {
@@ -37,6 +99,28 @@ namespace Calculator.Core.Models
         public static bool operator !=(CalcValue left, CalcValue right)
         {
             return !(left == right);
+        }
+
+        public static bool operator >(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) return false;
+            return left.value > right.value;
+        }
+
+        public static bool operator <(CalcValue left, CalcValue right)
+        {
+            if (left == null || right == null) return false;
+            return left.value < right.value;
+        }
+
+        public static bool operator >=(CalcValue left, CalcValue right)
+        {
+            return left > right || left == right;
+        }
+
+        public static bool operator <=(CalcValue left, CalcValue right)
+        {
+            return left < right || left == right;
         }
 
         // CLR 구조 활용 - 인터페이스 구현
@@ -65,6 +149,11 @@ namespace Calculator.Core.Models
         public override string ToString()
         {
             return value.ToString();
+        }
+
+        public string ToString(string format)
+        {
+            return value.ToString(format);
         }
     }
 }
