@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Core\Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="UI\CalculatorView.xaml.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>

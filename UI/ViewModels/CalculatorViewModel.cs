@@ -1,5 +1,6 @@
 ﻿using Calculator.Core.Engine;
 using Calculator.Core.Models;
+using Calculator.Core.Services;
 using Calculator.UI.Views;
 using System;
 using System.Collections.ObjectModel;
@@ -18,8 +19,8 @@ namespace Calculator.UI.ViewModels
         private string currentInput;
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
-        private ObservableCollection<HistoryItem> historyItems;
         private HistoryWindow historyWindow;
+        private readonly HistoryService historyService;
 
         // 속성
         public string Display
@@ -42,15 +43,8 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        public ObservableCollection<HistoryItem> HistoryItems
-        {
-            get => historyItems;
-            set
-            {
-                historyItems = value;
-                OnPropertyChanged();
-            }
-        }
+        // HistoryService의 Items를 직접 노출
+        public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
 
         // 명령들
         public ICommand NumberCommand { get; private set; }
@@ -72,15 +66,14 @@ namespace Calculator.UI.ViewModels
         public ICommand KeyPressCommand { get; private set; }
         public ICommand ShowHistoryCommand { get; private set; }
 
-
-        // 생성자
+        // 생성자 - 하나로 통합
         public CalculatorViewModel()
         {
             calculator = new StandardCalculator();
+            historyService = new HistoryService();
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
-            HistoryItems = new ObservableCollection<HistoryItem>();
 
             InitializeCommands();
         }
@@ -149,13 +142,14 @@ namespace Calculator.UI.ViewModels
 
             try
             {
-                CalcValue result = calculator.Evaluate(CurrentInput);
+                string expression = CurrentInput;
+                CalcValue result = calculator.Evaluate(expression);
                 Display = result.ToString();
                 CurrentInput = Display;
                 isResultDisplayed = true;
 
-                // 히스토리 업데이트
-                UpdateHistory();
+                // 히스토리에 추가
+                historyService.Add(expression, result);
             }
             catch (Exception ex)
             {
@@ -220,12 +214,15 @@ namespace Calculator.UI.ViewModels
 
             try
             {
-                CalcValue value = calculator.Evaluate(CurrentInput);
+                string expression = CurrentInput;
+                CalcValue value = calculator.Evaluate(expression);
                 CalcValue result = calculator.Reciprocal(value);
                 Display = result.ToString();
                 CurrentInput = Display;
                 isResultDisplayed = true;
-                UpdateHistory();
+
+                // 히스토리에 추가
+                historyService.Add($"1/({expression})", result);
             }
             catch (Exception ex)
             {
@@ -241,12 +238,15 @@ namespace Calculator.UI.ViewModels
 
             try
             {
-                CalcValue value = calculator.Evaluate(CurrentInput);
+                string expression = CurrentInput;
+                CalcValue value = calculator.Evaluate(expression);
                 CalcValue result = calculator.Percent(value);
                 Display = result.ToString();
                 CurrentInput = Display;
                 isResultDisplayed = true;
-                UpdateHistory();
+
+                // 히스토리에 추가
+                historyService.Add($"{expression}%", result);
             }
             catch (Exception ex)
             {
@@ -297,8 +297,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteClearHistory(object parameter)
         {
-            calculator.History.Clear();
-            HistoryItems.Clear();
+            historyService.Clear();
         }
 
         private void ExecuteCopy(object parameter)
@@ -420,21 +419,7 @@ namespace Calculator.UI.ViewModels
                     break;
             }
         }
-        private void UpdateHistory()
-        {
-            var historyItems = calculator.History.Items.Reverse().Take(20); // 20개로 늘림
-            HistoryItems.Clear();
-            foreach (var item in historyItems)
-            {
-                HistoryItems.Add(item);
-            }
 
-            // 히스토리 창이 열려있으면 실시간 업데이트
-            if (historyWindow != null && historyWindow.DataContext is HistoryViewModel historyVM)
-            {
-                historyVM.RefreshHistory();
-            }
-        }
         private void ExecuteShowHistory(object parameter)
         {
             // 이미 열려있는 창이 있으면 앞으로 가져오기
@@ -451,6 +436,9 @@ namespace Calculator.UI.ViewModels
             historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
             historyWindow.Show(); // ShowDialog() 대신 Show() 사용
         }
+
+        // HistoryService 외부 노출
+        public HistoryService History => historyService;
 
         // INotifyPropertyChanged 구현
         public event PropertyChangedEventHandler PropertyChanged;
