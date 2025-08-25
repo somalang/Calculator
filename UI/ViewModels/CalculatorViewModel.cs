@@ -19,6 +19,7 @@ namespace Calculator.UI.ViewModels
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
         private ObservableCollection<HistoryItem> historyItems;
+        private HistoryWindow historyWindow;
 
         // 속성
         public string Display
@@ -70,6 +71,7 @@ namespace Calculator.UI.ViewModels
         public ICommand PasteCommand { get; private set; }
         public ICommand KeyPressCommand { get; private set; }
         public ICommand ShowHistoryCommand { get; private set; }
+
 
         // 생성자
         public CalculatorViewModel()
@@ -418,21 +420,36 @@ namespace Calculator.UI.ViewModels
                     break;
             }
         }
-
         private void UpdateHistory()
         {
-            var historyItems = calculator.History.Items.Reverse().Take(10);
+            var historyItems = calculator.History.Items.Reverse().Take(20); // 20개로 늘림
             HistoryItems.Clear();
             foreach (var item in historyItems)
             {
                 HistoryItems.Add(item);
             }
+
+            // 히스토리 창이 열려있으면 실시간 업데이트
+            if (historyWindow != null && historyWindow.DataContext is HistoryViewModel historyVM)
+            {
+                historyVM.RefreshHistory();
+            }
         }
         private void ExecuteShowHistory(object parameter)
         {
-            var historyWindow = new HistoryWindow(this);
+            // 이미 열려있는 창이 있으면 앞으로 가져오기
+            if (historyWindow != null)
+            {
+                historyWindow.Activate();
+                historyWindow.Focus();
+                return;
+            }
+
+            // 새 히스토리 창 생성 (모달리스)
+            historyWindow = new HistoryWindow(this);
             historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.ShowDialog();
+            historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
+            historyWindow.Show(); // ShowDialog() 대신 Show() 사용
         }
 
         // INotifyPropertyChanged 구현
