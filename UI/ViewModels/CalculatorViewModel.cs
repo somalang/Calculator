@@ -1,9 +1,12 @@
 ﻿using Calculator.Core.Engine;
 using Calculator.Core.Models;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows;
+using System.Linq;
 
 namespace Calculator.UI.ViewModels
 {
@@ -14,6 +17,8 @@ namespace Calculator.UI.ViewModels
         private string currentInput;
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
+        private ObservableCollection<HistoryItem> historyItems;
+
         // 속성
         public string Display
         {
@@ -24,6 +29,7 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public string CurrentInput
         {
             get => currentInput;
@@ -33,7 +39,18 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-        // 명령
+
+        public ObservableCollection<HistoryItem> HistoryItems
+        {
+            get => historyItems;
+            set
+            {
+                historyItems = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // 명령들
         public ICommand NumberCommand { get; }
         public ICommand OperatorCommand { get; }
         public ICommand EqualsCommand { get; }
@@ -42,10 +59,15 @@ namespace Calculator.UI.ViewModels
         public ICommand BackspaceCommand { get; }
         public ICommand SqrtCommand { get; }
         public ICommand SquareCommand { get; }
+        public ICommand ReciprocalCommand { get; }
+        public ICommand PercentCommand { get; }
         public ICommand LeftParenCommand { get; }
         public ICommand RightParenCommand { get; }
         public ICommand ToggleSignCommand { get; }
-
+        public ICommand ClearHistoryCommand { get; }
+        public ICommand CopyCommand { get; }
+        public ICommand PasteCommand { get; }
+        public ICommand KeyPressCommand { get; }
 
         // 생성자
         public CalculatorViewModel()
@@ -54,7 +76,13 @@ namespace Calculator.UI.ViewModels
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
+            HistoryItems = new ObservableCollection<HistoryItem>();
 
+            InitializeCommands();
+        }
+
+        private void InitializeCommands()
+        {
             NumberCommand = new RelayCommand(ExecuteNumber);
             OperatorCommand = new RelayCommand(ExecuteOperator);
             EqualsCommand = new RelayCommand(ExecuteEquals);
@@ -63,10 +91,18 @@ namespace Calculator.UI.ViewModels
             BackspaceCommand = new RelayCommand(ExecuteBackspace);
             SqrtCommand = new RelayCommand(ExecuteSqrt);
             SquareCommand = new RelayCommand(ExecuteSquare);
+            ReciprocalCommand = new RelayCommand(ExecuteReciprocal);
+            PercentCommand = new RelayCommand(ExecutePercent);
             LeftParenCommand = new RelayCommand(ExecuteLeftParen);
             RightParenCommand = new RelayCommand(ExecuteRightParen);
             ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
+            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
+            CopyCommand = new RelayCommand(ExecuteCopy);
+            PasteCommand = new RelayCommand(ExecutePaste);
+            KeyPressCommand = new RelayCommand(ExecuteKeyPress);
         }
+
+        // 명령 구현들
         private void ExecuteNumber(object parameter)
         {
             string number = parameter?.ToString();
@@ -84,6 +120,7 @@ namespace Calculator.UI.ViewModels
             CurrentInput += number;
             Display = CurrentInput;
         }
+
         private void ExecuteOperator(object parameter)
         {
             string operatorSymbol = parameter?.ToString();
@@ -100,6 +137,7 @@ namespace Calculator.UI.ViewModels
                 Display = CurrentInput;
             }
         }
+
         private void ExecuteEquals(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -110,6 +148,9 @@ namespace Calculator.UI.ViewModels
                 Display = result.ToString();
                 CurrentInput = Display;
                 isResultDisplayed = true;
+
+                // 히스토리 업데이트
+                UpdateHistory();
             }
             catch (Exception ex)
             {
@@ -118,11 +159,11 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
             }
         }
+
         private void ExecuteClear(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
-            // 공백 기준으로 쪼개고 마지막 토큰만 제거
             var tokens = CurrentInput.Trim().Split(' ');
             if (tokens.Length > 1)
             {
@@ -151,6 +192,7 @@ namespace Calculator.UI.ViewModels
             CurrentInput = CurrentInput.Length > 1 ? CurrentInput[..^1] : string.Empty;
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
+
         private void ExecuteSqrt(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -158,6 +200,7 @@ namespace Calculator.UI.ViewModels
             CurrentInput = $"sqrt({CurrentInput})";
             Display = CurrentInput;
         }
+
         private void ExecuteSquare(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -165,6 +208,49 @@ namespace Calculator.UI.ViewModels
             CurrentInput = $"sqr({CurrentInput})";
             Display = CurrentInput;
         }
+
+        private void ExecuteReciprocal(object parameter)
+        {
+            if (string.IsNullOrEmpty(CurrentInput)) return;
+
+            try
+            {
+                CalcValue value = calculator.Evaluate(CurrentInput);
+                CalcValue result = calculator.Reciprocal(value);
+                Display = result.ToString();
+                CurrentInput = Display;
+                isResultDisplayed = true;
+                UpdateHistory();
+            }
+            catch (Exception ex)
+            {
+                Display = $"오류: {ex.Message}";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+            }
+        }
+
+        private void ExecutePercent(object parameter)
+        {
+            if (string.IsNullOrEmpty(CurrentInput)) return;
+
+            try
+            {
+                CalcValue value = calculator.Evaluate(CurrentInput);
+                CalcValue result = calculator.Percent(value);
+                Display = result.ToString();
+                CurrentInput = Display;
+                isResultDisplayed = true;
+                UpdateHistory();
+            }
+            catch (Exception ex)
+            {
+                Display = $"오류: {ex.Message}";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+            }
+        }
+
         private void ExecuteLeftParen(object parameter)
         {
             if (isResultDisplayed)
@@ -176,6 +262,7 @@ namespace Calculator.UI.ViewModels
             CurrentInput += "(";
             Display = CurrentInput;
         }
+
         private void ExecuteRightParen(object parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
@@ -183,23 +270,161 @@ namespace Calculator.UI.ViewModels
             CurrentInput += ")";
             Display = CurrentInput;
         }
+
         private void ExecuteToggleSign(object parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
-        
+
             var tokens = CurrentInput.Trim().Split(' ');
             string lastToken = tokens[^1];
-        
+
             if (decimal.TryParse(lastToken, out _))
             {
-                // 음수면 양수로, 양수면 음수로
                 if (lastToken.StartsWith("-", StringComparison.Ordinal))
                     tokens[^1] = lastToken.Substring(1);
                 else
                     tokens[^1] = "-" + lastToken;
-        
+
                 CurrentInput = string.Join(" ", tokens);
                 Display = CurrentInput;
+            }
+        }
+
+        private void ExecuteClearHistory(object parameter)
+        {
+            calculator.History.Clear();
+            HistoryItems.Clear();
+        }
+
+        private void ExecuteCopy(object parameter)
+        {
+            try
+            {
+                Clipboard.SetText(Display);
+            }
+            catch (Exception)
+            {
+                // 클립보드 복사 실패시 무시
+            }
+        }
+
+        private void ExecutePaste(object parameter)
+        {
+            try
+            {
+                string clipboardText = Clipboard.GetText();
+                if (!string.IsNullOrWhiteSpace(clipboardText) &&
+                    calculator.ValidateExpression(clipboardText))
+                {
+                    CurrentInput = clipboardText;
+                    Display = CurrentInput;
+                    isResultDisplayed = false;
+                }
+            }
+            catch (Exception)
+            {
+                // 클립보드 붙여넣기 실패시 무시
+            }
+        }
+
+        private void ExecuteKeyPress(object parameter)
+        {
+            if (parameter is KeyEventArgs keyArgs)
+            {
+                HandleKeyPress(keyArgs.Key);
+            }
+            else if (parameter is Key key)
+            {
+                HandleKeyPress(key);
+            }
+        }
+
+        private void HandleKeyPress(Key key)
+        {
+            switch (key)
+            {
+                case Key.D0:
+                case Key.NumPad0:
+                    ExecuteNumber("0");
+                    break;
+                case Key.D1:
+                case Key.NumPad1:
+                    ExecuteNumber("1");
+                    break;
+                case Key.D2:
+                case Key.NumPad2:
+                    ExecuteNumber("2");
+                    break;
+                case Key.D3:
+                case Key.NumPad3:
+                    ExecuteNumber("3");
+                    break;
+                case Key.D4:
+                case Key.NumPad4:
+                    ExecuteNumber("4");
+                    break;
+                case Key.D5:
+                case Key.NumPad5:
+                    ExecuteNumber("5");
+                    break;
+                case Key.D6:
+                case Key.NumPad6:
+                    ExecuteNumber("6");
+                    break;
+                case Key.D7:
+                case Key.NumPad7:
+                    ExecuteNumber("7");
+                    break;
+                case Key.D8:
+                case Key.NumPad8:
+                    ExecuteNumber("8");
+                    break;
+                case Key.D9:
+                case Key.NumPad9:
+                    ExecuteNumber("9");
+                    break;
+                case Key.OemPeriod:
+                case Key.Decimal:
+                    ExecuteNumber(".");
+                    break;
+                case Key.OemPlus:
+                case Key.Add:
+                    ExecuteOperator("+");
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    ExecuteOperator("-");
+                    break;
+                case Key.Multiply:
+                    ExecuteOperator("*");
+                    break;
+                case Key.Divide:
+                case Key.OemQuestion:
+                    ExecuteOperator("/");
+                    break;
+                case Key.Enter:
+                case Key.Return:
+                    ExecuteEquals(null);
+                    break;
+                case Key.Escape:
+                    ExecuteClearAll(null);
+                    break;
+                case Key.Back:
+                    ExecuteBackspace(null);
+                    break;
+                case Key.Delete:
+                    ExecuteClear(null);
+                    break;
+            }
+        }
+
+        private void UpdateHistory()
+        {
+            var historyItems = calculator.History.Items.Reverse().Take(10);
+            HistoryItems.Clear();
+            foreach (var item in historyItems)
+            {
+                HistoryItems.Add(item);
             }
         }
 
