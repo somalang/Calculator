@@ -111,7 +111,8 @@
             </Border>
 
             <UniformGrid Grid.Row="2" Rows="6" Columns="4">
-                <Button Content="%" Style="{StaticResource FunctionButtonStyle}"/>
+                <Button Content="%" Command="{Binding PercentCommand}"
+                        Style="{StaticResource FunctionButtonStyle}"/>
                 <Button Content="CE" Command="{Binding ClearCommand}" 
                         Style="{StaticResource FunctionButtonStyle}"/>
                 <Button Content="C" Command="{Binding ClearAllCommand}" 
@@ -119,7 +120,8 @@
                 <Button Content="⌫" Command="{Binding BackspaceCommand}" 
                         Style="{StaticResource FunctionButtonStyle}"/>
 
-                <Button Content="1/ₓ" Style="{StaticResource FunctionButtonStyle}"/>
+                <Button Content="1/ₓ" Command="{Binding ReciprocalCommand}"
+                        Style="{StaticResource FunctionButtonStyle}"/>
                 <Button Content="x²" Command="{Binding SquareCommand}" 
                         Style="{StaticResource FunctionButtonStyle}"/>
                 <Button Content="√" Command="{Binding SqrtCommand}" 
@@ -156,7 +158,7 @@
 
                 <!-- +/- 커맨드 추가해야 함 -->
                 <Button Content="+/-" Command="{Binding ToggleSignCommand}"
-                        CommandParameter"+/-" Style="{StaticResource NumberButtonStyle}"/>
+                        CommandParameter="+/-" Style="{StaticResource NumberButtonStyle}"/>
                 <Button Content="0" Command="{Binding NumberCommand}" 
                         CommandParameter="0" Style="{StaticResource NumberButtonStyle}"/>
                 <Button Content="." Command="{Binding NumberCommand}" 
