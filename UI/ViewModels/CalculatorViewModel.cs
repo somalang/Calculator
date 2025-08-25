@@ -51,23 +51,23 @@ namespace Calculator.UI.ViewModels
         }
 
         // 명령들
-        public ICommand NumberCommand { get; }
-        public ICommand OperatorCommand { get; }
-        public ICommand EqualsCommand { get; }
-        public ICommand ClearCommand { get; }
-        public ICommand ClearAllCommand { get; }
-        public ICommand BackspaceCommand { get; }
-        public ICommand SqrtCommand { get; }
-        public ICommand SquareCommand { get; }
-        public ICommand ReciprocalCommand { get; }
-        public ICommand PercentCommand { get; }
-        public ICommand LeftParenCommand { get; }
-        public ICommand RightParenCommand { get; }
-        public ICommand ToggleSignCommand { get; }
-        public ICommand ClearHistoryCommand { get; }
-        public ICommand CopyCommand { get; }
-        public ICommand PasteCommand { get; }
-        public ICommand KeyPressCommand { get; }
+        public ICommand NumberCommand { get; private set; }
+        public ICommand OperatorCommand { get; private set; }
+        public ICommand EqualsCommand { get; private set; }
+        public ICommand ClearCommand { get; private set; }
+        public ICommand ClearAllCommand { get; private set; }
+        public ICommand BackspaceCommand { get; private set; }
+        public ICommand SqrtCommand { get; private set; }
+        public ICommand SquareCommand { get; private set; }
+        public ICommand ReciprocalCommand { get; private set; }
+        public ICommand PercentCommand { get; private set; }
+        public ICommand LeftParenCommand { get; private set; }
+        public ICommand RightParenCommand { get; private set; }
+        public ICommand ToggleSignCommand { get; private set; }
+        public ICommand ClearHistoryCommand { get; private set; }
+        public ICommand CopyCommand { get; private set; }
+        public ICommand PasteCommand { get; private set; }
+        public ICommand KeyPressCommand { get; private set; }
 
         // 생성자
         public CalculatorViewModel()
@@ -399,11 +399,9 @@ namespace Calculator.UI.ViewModels
                     ExecuteOperator("*");
                     break;
                 case Key.Divide:
-                case Key.OemQuestion:
                     ExecuteOperator("/");
                     break;
                 case Key.Enter:
-                case Key.Return:
                     ExecuteEquals(null);
                     break;
                 case Key.Escape:
