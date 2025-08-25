@@ -57,16 +57,16 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 헤더 -->
+        <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="계산 히스토리" FontSize="16" FontWeight="SemiBold" 
+            <TextBlock Text="Calculation History" FontSize="16" FontWeight="SemiBold" 
                        VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding HistoryItems.Count, StringFormat=({0}개)}" 
+            <TextBlock Text="{Binding HistoryItems.Count, StringFormat=({0} items)}" 
                        FontSize="12" Foreground="Gray" 
                        VerticalAlignment="Center" Margin="10,0,0,0"/>
         </StackPanel>
 
-        <!-- 히스토리 리스트 -->
+        <!-- History List -->
         <ListView Grid.Row="1" 
                   ItemsSource="{Binding HistoryItems}"
                   SelectedItem="{Binding SelectedHistoryItem}"
@@ -74,7 +74,7 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="계산식" Width="150">
+                    <GridViewColumn Header="Expression" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Expression}" 
@@ -83,7 +83,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="결과" Width="100">
+                    <GridViewColumn Header="Result" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Result}" 
@@ -93,7 +93,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="시간" Width="80">
+                    <GridViewColumn Header="Time" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Timestamp, StringFormat=HH:mm:ss}" 
@@ -106,16 +106,16 @@
             </ListView.View>
         </ListView>
 
-        <!-- 버튼 영역 -->
+        <!-- Button Area -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" 
                     HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="선택된 식 사용" 
+            <Button Content="Use Selected" 
                     Command="{Binding UseSelectedCommand}"
                     Style="{StaticResource ButtonStyle}"/>
-            <Button Content="히스토리 지우기" 
+            <Button Content="Clear History" 
                     Command="{Binding ClearHistoryCommand}"
                     Style="{StaticResource ButtonStyle}"/>
-            <Button Content="닫기" 
+            <Button Content="Close" 
                     Click="CloseButton_Click"
                     Style="{StaticResource ButtonStyle}"/>
         </StackPanel>
