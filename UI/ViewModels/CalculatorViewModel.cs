@@ -1,12 +1,13 @@
 ﻿using Calculator.Core.Engine;
 using Calculator.Core.Models;
+using Calculator.UI.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using System.Windows;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
@@ -68,6 +69,7 @@ namespace Calculator.UI.ViewModels
         public ICommand CopyCommand { get; private set; }
         public ICommand PasteCommand { get; private set; }
         public ICommand KeyPressCommand { get; private set; }
+        public ICommand ShowHistoryCommand { get; private set; }
 
         // 생성자
         public CalculatorViewModel()
@@ -100,6 +102,7 @@ namespace Calculator.UI.ViewModels
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
             KeyPressCommand = new RelayCommand(ExecuteKeyPress);
+            ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
         }
 
         // 명령 구현들
@@ -424,6 +427,12 @@ namespace Calculator.UI.ViewModels
             {
                 HistoryItems.Add(item);
             }
+        }
+        private void ExecuteShowHistory(object parameter)
+        {
+            var historyWindow = new HistoryWindow(this);
+            historyWindow.Owner = Application.Current.MainWindow;
+            historyWindow.ShowDialog();
         }
 
         // INotifyPropertyChanged 구현
