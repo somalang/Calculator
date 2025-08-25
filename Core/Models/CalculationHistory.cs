@@ -40,10 +40,5 @@ namespace Calculator.Core.Models
         public string Expression { get; set; }
         public CalcValue Result { get; set; }
         public DateTime Timestamp { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Expression} = {Result}";
-        }
     }
 }
