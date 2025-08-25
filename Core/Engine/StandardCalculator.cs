@@ -14,7 +14,12 @@ namespace Calculator.Core.Engine
 
                 var tokens = parser.Tokenize(expression);
                 var rpnTokens = parser.Parse(tokens);
-                return evaluator.Evaluate(rpnTokens);
+                var result = evaluator.Evaluate(rpnTokens);
+
+                // 히스토리에 추가
+                history.AddItem(expression, result);
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -27,7 +32,7 @@ namespace Calculator.Core.Engine
             if (string.IsNullOrWhiteSpace(expression))
                 return false;
 
-            // 기본 유효성 검사
+            // 괄호 균형 검사
             int parenthesesCount = 0;
             foreach (char c in expression)
             {
