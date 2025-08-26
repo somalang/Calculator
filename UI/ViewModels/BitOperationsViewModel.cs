@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Calculator.UI.Views;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
@@ -65,19 +67,21 @@ namespace Calculator.UI.ViewModels
         }
 
         // Commands
-        public ICommand AndCommand { get; private set; }
-        public ICommand OrCommand { get; private set; }
-        public ICommand XorCommand { get; private set; }
-        public ICommand NotACommand { get; private set; }
-        public ICommand NotBCommand { get; private set; }
-        public ICommand LeftShiftCommand { get; private set; }
-        public ICommand RightShiftCommand { get; private set; }
-        public ICommand ClearCommand { get; private set; }
-        public ICommand SwapCommand { get; private set; }
+        public ICommand? OpenMenuCommand { get; }
+        public ICommand? AndCommand { get; private set; }
+        public ICommand? OrCommand { get; private set; }
+        public ICommand? XorCommand { get; private set; }
+        public ICommand? NotACommand { get; private set; }
+        public ICommand? NotBCommand { get; private set; }
+        public ICommand? LeftShiftCommand { get; private set; }
+        public ICommand? RightShiftCommand { get; private set; }
+        public ICommand? ClearCommand { get; private set; }
+        public ICommand? SwapCommand { get; private set; }
 
         public BitOperationsViewModel()
         {
             InitializeCommands();
+            OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 
         private void InitializeCommands()
@@ -162,6 +166,17 @@ namespace Calculator.UI.ViewModels
             (OperandAInput, OperandBInput) = (OperandBInput, OperandAInput);
         }
 
+        private void OpenMenu(object parameter)
+        {
+            if (parameter is Window currentWindow)
+            {
+                var menuWindow = new MenuWindow();
+                menuWindow.Show();
+
+                currentWindow.Close();
+            }
+        }
+
         private void UpdateOperandA()
         {
             try
@@ -242,9 +257,9 @@ namespace Calculator.UI.ViewModels
             OnPropertyChanged(nameof(ResultDecimal));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

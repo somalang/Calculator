@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Calculator.UI.Views;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -154,16 +155,18 @@ namespace Calculator.UI.ViewModels
         public string HexOutput => Convert.ToString(decimalValue, 16).ToUpper();
 
         // Commands
-        public ICommand DigitCommand { get; private set; }
-        public ICommand ClearCommand { get; private set; }
-        public ICommand BackspaceCommand { get; private set; }
-        public ICommand CopyCommand { get; private set; }
-        public ICommand PasteCommand { get; private set; }
+        public ICommand? DigitCommand { get; private set; }
+        public ICommand? ClearCommand { get; private set; }
+        public ICommand? BackspaceCommand { get; private set; }
+        public ICommand? CopyCommand { get; private set; }
+        public ICommand? PasteCommand { get; private set; }
+        public ICommand? OpenMenuCommand { get; }
 
         public BaseConverterViewModel()
         {
             InitializeCommands();
             UpdateDigitAvailability();
+            OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 
         private void InitializeCommands()
@@ -173,6 +176,17 @@ namespace Calculator.UI.ViewModels
             BackspaceCommand = new RelayCommand(ExecuteBackspace);
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
+        }
+
+        private void OpenMenu(object parameter)
+        {
+            if (parameter is Window currentWindow)
+            {
+                var menuWindow = new MenuWindow();
+                menuWindow.Show();
+
+                currentWindow.Close();
+            }
         }
 
         private void ExecuteDigit(object parameter)
@@ -262,9 +276,9 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
