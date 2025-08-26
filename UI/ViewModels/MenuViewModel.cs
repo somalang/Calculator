@@ -25,7 +25,7 @@ namespace Calculator.UI.ViewModels
             BitOperationsCommand = new RelayCommand(ExecuteBitOperations);
         }
 
-        private void ExecuteStandardCalculator(object parameter)
+        private void ExecuteStandardCalculator(object? parameter)
         {
             // 메인 창이 이미 존재하면 메뉴만 닫음
             var mainWindow = Application.Current.MainWindow;
@@ -40,7 +40,7 @@ namespace Calculator.UI.ViewModels
             owner.Close();
         }
 
-        private void ExecuteAdvancedCalculator(object parameter)
+        private void ExecuteAdvancedCalculator(object? parameter)
         {
             var advancedWindow = new AdvancedCalculatorWindow();
             //advancedWindow.Owner = Application.Current.MainWindow ?? owner;
@@ -48,7 +48,7 @@ namespace Calculator.UI.ViewModels
             owner.Close();
         }
 
-        private void ExecuteBaseConverter(object parameter)
+        private void ExecuteBaseConverter(object? parameter)
         {
             var baseConverterWindow = new BaseConverterWindow();
             //baseConverterWindow.Owner = Application.Current.MainWindow ?? owner;
@@ -56,7 +56,7 @@ namespace Calculator.UI.ViewModels
             owner.Close();
         }
 
-        private void ExecuteBitOperations(object parameter)
+        private void ExecuteBitOperations(object? parameter)
         {
             var bitOperationsWindow = new BitOperationsWindow();
             //bitOperationsWindow.Owner = Application.Current.MainWindow ?? owner;
@@ -64,9 +64,9 @@ namespace Calculator.UI.ViewModels
             owner.Close();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
