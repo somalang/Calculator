@@ -178,7 +178,7 @@ namespace Calculator.UI.ViewModels
             PasteCommand = new RelayCommand(ExecutePaste);
         }
 
-        private void OpenMenu(object parameter)
+        private void OpenMenu(object? parameter)
         {
             if (parameter is Window currentWindow)
             {
@@ -189,7 +189,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteDigit(object parameter)
+        private void ExecuteDigit(object? parameter)
         {
             string? digit = parameter?.ToString();
             if (string.IsNullOrEmpty(digit)) return;
@@ -200,12 +200,12 @@ namespace Calculator.UI.ViewModels
                 InputValue += digit;
         }
 
-        private void ExecuteClear(object parameter)
+        private void ExecuteClear(object? parameter)
         {
             InputValue = "0";
         }
 
-        private void ExecuteBackspace(object parameter)
+        private void ExecuteBackspace(object? parameter)
         {
             if (InputValue.Length > 1)
                 InputValue = InputValue.Substring(0, InputValue.Length - 1);
@@ -213,13 +213,13 @@ namespace Calculator.UI.ViewModels
                 InputValue = "0";
         }
 
-        private void ExecuteCopy(object parameter)
+        private void ExecuteCopy(object? parameter)
         {
             string result = $"BIN: {BinaryOutput}\nOCT: {OctalOutput}\nDEC: {DecimalOutput}\nHEX: {HexOutput}";
             Clipboard.SetText(result);
         }
 
-        private void ExecutePaste(object parameter)
+        private void ExecutePaste(object? parameter)
         {
             if (Clipboard.ContainsText())
             {
