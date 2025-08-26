@@ -191,7 +191,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteDigit(object parameter)
         {
-            string digit = parameter?.ToString();
+            string? digit = parameter?.ToString();
             if (string.IsNullOrEmpty(digit)) return;
 
             if (InputValue == "0")
