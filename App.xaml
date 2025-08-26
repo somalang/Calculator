@@ -1,10 +1,8 @@
-﻿<!-- App.xaml -->
-<Application x:Class="Calculator.App"
+﻿<Application x:Class="Calculator.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="UI/CalculatorView.xaml">
+             StartupUri="UI/Views/MenuWindow.xaml">
     <Application.Resources>
-        <!-- 전역 리소스가 필요한 경우 여기에 추가 -->
         <Style TargetType="Window">
             <Setter Property="FontFamily" Value="Segoe UI" />
         </Style>
