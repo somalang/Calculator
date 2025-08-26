@@ -12,8 +12,8 @@ namespace Calculator.UI.ViewModels
 {
     public class StandardCalculatorViewModel : INotifyPropertyChanged
     {
-        private string display;
-        private string currentInput;
+        private string display = string.Empty;
+        private string currentInput = string.Empty;
         private readonly StandardCalculator calculator;
         private readonly HistoryService historyService;
         private bool isResultDisplayed;
@@ -41,21 +41,21 @@ namespace Calculator.UI.ViewModels
         public HistoryService HistoryService => historyService;
 
         // Commands
-        public ICommand NumberCommand { get; private set; }
-        public ICommand OperatorCommand { get; private set; }
-        public ICommand EqualsCommand { get; private set; }
-        public ICommand ClearCommand { get; private set; }
-        public ICommand ClearAllCommand { get; private set; }
-        public ICommand BackspaceCommand { get; private set; }
-        public ICommand SqrtCommand { get; private set; }
-        public ICommand SquareCommand { get; private set; }
-        public ICommand ReciprocalCommand { get; private set; }
-        public ICommand PercentCommand { get; private set; }
-        public ICommand ToggleSignCommand { get; private set; }
-        public ICommand DecimalCommand { get; private set; }
-        public ICommand MenuCommand { get; private set; }
-        public ICommand HistoryCommand { get; private set; }
-
+        public ICommand? NumberCommand { get; private set; }
+        public ICommand? OperatorCommand { get; private set; }
+        public ICommand? EqualsCommand { get; private set; }
+        public ICommand? ClearCommand { get; private set; }
+        public ICommand? ClearAllCommand { get; private set; }
+        public ICommand? BackspaceCommand { get; private set; }
+        public ICommand? SqrtCommand { get; private set; }
+        public ICommand? SquareCommand { get; private set; }
+        public ICommand? ReciprocalCommand { get; private set; }
+        public ICommand? PercentCommand { get; private set; }
+        public ICommand? ToggleSignCommand { get; private set; }
+        public ICommand? DecimalCommand { get; private set; }
+        public ICommand? MenuCommand { get; private set; }
+        public ICommand? HistoryCommand { get; private set; }
+    
         public StandardCalculatorViewModel()
         {
             calculator = new StandardCalculator();
@@ -85,9 +85,9 @@ namespace Calculator.UI.ViewModels
             HistoryCommand = new RelayCommand(ExecuteHistory);
         }
 
-        private void ExecuteNumber(object parameter)
+        private void ExecuteNumber(object? parameter)
         {
-            string number = parameter?.ToString();
+            string? number = parameter?.ToString();
             if (string.IsNullOrEmpty(number)) return;
 
             if (isResultDisplayed)
@@ -103,9 +103,9 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteOperator(object parameter)
+        private void ExecuteOperator(object? parameter)
         {
-            string operatorSymbol = parameter?.ToString();
+            string? operatorSymbol = parameter?.ToString();
             if (string.IsNullOrEmpty(operatorSymbol)) return;
 
             if (isResultDisplayed)
@@ -120,7 +120,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteEquals(object parameter)
+        private void ExecuteEquals(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -144,7 +144,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClear(object parameter)
+        private void ExecuteClear(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -162,14 +162,14 @@ namespace Calculator.UI.ViewModels
             isResultDisplayed = false;
         }
 
-        private void ExecuteClearAll(object parameter)
+        private void ExecuteClearAll(object? parameter)
         {
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
         }
 
-        private void ExecuteBackspace(object parameter)
+        private void ExecuteBackspace(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -177,27 +177,27 @@ namespace Calculator.UI.ViewModels
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
 
-        private void ExecuteSqrt(object parameter)
+        private void ExecuteSqrt(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Sqrt, "√");
         }
 
-        private void ExecuteSquare(object parameter)
+        private void ExecuteSquare(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Square, "sqr");
         }
 
-        private void ExecuteReciprocal(object parameter)
+        private void ExecuteReciprocal(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Reciprocal, "1/");
         }
 
-        private void ExecutePercent(object parameter)
+        private void ExecutePercent(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Percent, "%");
         }
 
-        private void ExecuteToggleSign(object parameter)
+        private void ExecuteToggleSign(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -216,7 +216,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteDecimal(object parameter)
+        private void ExecuteDecimal(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -238,14 +238,14 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteMenu(object parameter)
+        private void ExecuteMenu(object? parameter)
         {
             var menuWindow = new MenuWindow();
             menuWindow.Owner = Application.Current.MainWindow;
             menuWindow.ShowDialog();
         }
 
-        private void ExecuteHistory(object parameter)
+        private void ExecuteHistory(object? parameter)
         {
             // 히스토리 창을 여는 로직 (필요시 구현)
             MessageBox.Show($"최근 계산: {historyService.Items.Count}개", "계산 히스토리");
@@ -276,9 +276,9 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
