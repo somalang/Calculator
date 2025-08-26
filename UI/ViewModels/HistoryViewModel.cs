@@ -12,12 +12,12 @@ namespace Calculator.UI.ViewModels
     {
         private readonly CalculatorViewModel calculatorViewModel;
         private readonly Window window;
-        private HistoryItem selectedHistoryItem;
+        private HistoryItem? selectedHistoryItem;
 
         // CalculatorViewModel의 HistoryItems를 직접 참조
         public ObservableCollection<HistoryItem> HistoryItems => calculatorViewModel.HistoryItems;
 
-        public HistoryItem SelectedHistoryItem
+        public HistoryItem? SelectedHistoryItem
         {
             get => selectedHistoryItem;
             set
@@ -41,18 +41,18 @@ namespace Calculator.UI.ViewModels
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
         }
 
-        private bool CanUseSelected(object parameter) => SelectedHistoryItem != null;
+        private bool CanUseSelected(object? parameter) => SelectedHistoryItem != null;
 
-        private void ExecuteUseSelected(object parameter)
+        private void ExecuteUseSelected(object? parameter)
         {
             if (SelectedHistoryItem != null)
             {
-                calculatorViewModel.CurrentInput = SelectedHistoryItem.Expression;
-                calculatorViewModel.Display = SelectedHistoryItem.Expression;
+                calculatorViewModel.CurrentInput = SelectedHistoryItem!.Expression;
+                calculatorViewModel.Display = SelectedHistoryItem!.Expression;
             }
         }
 
-        private void ExecuteDeleteSelected(object parameter)
+        private void ExecuteDeleteSelected(object? parameter)
         {
             if (SelectedHistoryItem != null)
             {
@@ -60,7 +60,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClearHistory(object parameter)
+        private void ExecuteClearHistory(object? parameter)
         {
             var result = MessageBox.Show(
                 "Clear all calculation history?",
@@ -74,9 +74,9 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
