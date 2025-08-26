@@ -97,42 +97,42 @@ namespace Calculator.UI.ViewModels
             SwapCommand = new RelayCommand(ExecuteSwap);
         }
 
-        private void ExecuteAnd(object parameter)
+        private void ExecuteAnd(object? parameter)
         {
             result = operandA & operandB;
             CurrentOperation = "AND";
             UpdateResultOutputs();
         }
 
-        private void ExecuteOr(object parameter)
+        private void ExecuteOr(object? parameter)
         {
             result = operandA | operandB;
             CurrentOperation = "OR";
             UpdateResultOutputs();
         }
 
-        private void ExecuteXor(object parameter)
+        private void ExecuteXor(object? parameter)
         {
             result = operandA ^ operandB;
             CurrentOperation = "XOR";
             UpdateResultOutputs();
         }
 
-        private void ExecuteNotA(object parameter)
+        private void ExecuteNotA(object? parameter)
         {
             result = ~operandA;
             CurrentOperation = "NOT A";
             UpdateResultOutputs();
         }
 
-        private void ExecuteNotB(object parameter)
+        private void ExecuteNotB(object? parameter)
         {
             result = ~operandB;
             CurrentOperation = "NOT B";
             UpdateResultOutputs();
         }
 
-        private void ExecuteLeftShift(object parameter)
+        private void ExecuteLeftShift(object? parameter)
         {
             if (operandB >= 0 && operandB < 64)
             {
@@ -142,7 +142,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteRightShift(object parameter)
+        private void ExecuteRightShift(object? parameter)
         {
             if (operandB >= 0 && operandB < 64)
             {
@@ -152,7 +152,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClear(object parameter)
+        private void ExecuteClear(object? parameter)
         {
             OperandAInput = "0";
             OperandBInput = "0";
@@ -161,12 +161,12 @@ namespace Calculator.UI.ViewModels
             UpdateResultOutputs();
         }
 
-        private void ExecuteSwap(object parameter)
+        private void ExecuteSwap(object? parameter)
         {
             (OperandAInput, OperandBInput) = (OperandBInput, OperandAInput);
         }
 
-        private void OpenMenu(object parameter)
+        private void OpenMenu(object? parameter)
         {
             if (parameter is Window currentWindow)
             {
