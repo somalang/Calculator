@@ -37,8 +37,9 @@ namespace Calculator.Core.Models
 
     public class HistoryItem
     {
-        public string? Expression { get; set; }
-        public CalcValue? Result { get; set; }
+        public string Expression { get; set; } = string.Empty; // 기본값 설정
+        public CalcValue Result { get; set; } = CalcValue.ZERO; // 기본값 설정
         public DateTime Timestamp { get; set; }
     }
+
 }
