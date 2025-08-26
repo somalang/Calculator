@@ -1,6 +1,7 @@
-﻿using Calculator.Core.Services;
+﻿using Calculator.Core.Models;
 using Calculator.UI.Views;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -8,7 +9,7 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class BitOperationsViewModel : INotifyPropertyChanged
+    public class BitOperationsViewModel : INotifyPropertyChanged, IHistoryProvider
     {
         private long operandA = 0;
         private long operandB = 0;
@@ -16,7 +17,11 @@ namespace Calculator.UI.ViewModels
         private string operandAInput = "0";
         private string operandBInput = "0";
         private HistoryWindow? historyWindow;
-        private readonly HistoryService historyService;
+
+        // History implementation
+        private readonly ObservableCollection<HistoryItem> historyItems;
+        public ObservableCollection<HistoryItem> HistoryItems => historyItems;
+
         public string OperandAInput
         {
             get => operandAInput;
@@ -84,10 +89,30 @@ namespace Calculator.UI.ViewModels
 
         public BitOperationsViewModel()
         {
+            historyItems = new ObservableCollection<HistoryItem>();
             InitializeCommands();
             OpenMenuCommand = new RelayCommand(OpenMenu);
-            historyService = new HistoryService();
+        }
 
+        // IHistoryProvider implementation
+        public void AddHistoryItem(string expression, CalcValue result)
+        {
+            historyItems.Add(new HistoryItem
+            {
+                Expression = expression,
+                Result = result,
+                Timestamp = DateTime.Now
+            });
+        }
+
+        public void ClearHistory()
+        {
+            historyItems.Clear();
+        }
+
+        public void RemoveHistoryItem(HistoryItem item)
+        {
+            historyItems.Remove(item);
         }
 
         private void InitializeCommands()
@@ -102,6 +127,7 @@ namespace Calculator.UI.ViewModels
             ClearCommand = new RelayCommand(ExecuteClear);
             SwapCommand = new RelayCommand(ExecuteSwap);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
+            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
         }
 
         private void ExecuteAnd(object? parameter)
@@ -109,6 +135,7 @@ namespace Calculator.UI.ViewModels
             result = operandA & operandB;
             CurrentOperation = "AND";
             UpdateResultOutputs();
+            AddHistoryItem($"{operandA} AND {operandB} = {result}", CalcValue.Create(result));
         }
 
         private void ExecuteOr(object? parameter)
@@ -116,6 +143,7 @@ namespace Calculator.UI.ViewModels
             result = operandA | operandB;
             CurrentOperation = "OR";
             UpdateResultOutputs();
+            AddHistoryItem($"{operandA} OR {operandB} = {result}", CalcValue.Create(result));
         }
 
         private void ExecuteXor(object? parameter)
@@ -123,6 +151,7 @@ namespace Calculator.UI.ViewModels
             result = operandA ^ operandB;
             CurrentOperation = "XOR";
             UpdateResultOutputs();
+            AddHistoryItem($"{operandA} XOR {operandB} = {result}", CalcValue.Create(result));
         }
 
         private void ExecuteNotA(object? parameter)
@@ -130,6 +159,7 @@ namespace Calculator.UI.ViewModels
             result = ~operandA;
             CurrentOperation = "NOT A";
             UpdateResultOutputs();
+            AddHistoryItem($"NOT {operandA} = {result}", CalcValue.Create(result));
         }
 
         private void ExecuteNotB(object? parameter)
@@ -137,6 +167,7 @@ namespace Calculator.UI.ViewModels
             result = ~operandB;
             CurrentOperation = "NOT B";
             UpdateResultOutputs();
+            AddHistoryItem($"NOT {operandB} = {result}", CalcValue.Create(result));
         }
 
         private void ExecuteLeftShift(object? parameter)
@@ -146,6 +177,7 @@ namespace Calculator.UI.ViewModels
                 result = operandA << (int)operandB;
                 CurrentOperation = $"A << {operandB}";
                 UpdateResultOutputs();
+                AddHistoryItem($"{operandA} << {operandB} = {result}", CalcValue.Create(result));
             }
         }
 
@@ -156,6 +188,7 @@ namespace Calculator.UI.ViewModels
                 result = operandA >> (int)operandB;
                 CurrentOperation = $"A >> {operandB}";
                 UpdateResultOutputs();
+                AddHistoryItem($"{operandA} >> {operandB} = {result}", CalcValue.Create(result));
             }
         }
 
@@ -171,6 +204,7 @@ namespace Calculator.UI.ViewModels
         private void ExecuteSwap(object? parameter)
         {
             (OperandAInput, OperandBInput) = (OperandBInput, OperandAInput);
+            AddHistoryItem($"Swapped operands: A={operandA}, B={operandB}", CalcValue.Create(0));
         }
 
         private void OpenMenu(object? parameter)
@@ -266,8 +300,9 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteClearHistory(object? parameter)
         {
-            historyService.Clear();
+            ClearHistory();
         }
+
         private void ExecuteShowHistory(object? parameter)
         {
             // 이미 열려있는 창이 있으면 앞으로 가져오기
@@ -285,13 +320,9 @@ namespace Calculator.UI.ViewModels
             historyWindow.Show(); // ShowDialog() 대신 Show() 사용
         }
 
-        // HistoryService 외부 노출
-        public HistoryService History => historyService;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
-}

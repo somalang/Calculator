@@ -5,10 +5,13 @@ namespace Calculator.UI.Views
 {
     public partial class HistoryWindow : Window
     {
-        public HistoryWindow(CalculatorViewModel calculatorViewModel)
+        private readonly IHistoryProvider historyProvider;
+
+        public HistoryWindow(IHistoryProvider provider)
         {
             InitializeComponent();
-            DataContext = new HistoryViewModel(calculatorViewModel, this);
+            historyProvider = provider;
+            DataContext = historyProvider.HistoryItems;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

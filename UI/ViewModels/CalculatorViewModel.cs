@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class CalculatorViewModel : INotifyPropertyChanged
+    public class CalculatorViewModel : INotifyPropertyChanged, IHistoryProvider
     {
         // 필드
         private string display = string.Empty;
@@ -21,6 +21,9 @@ namespace Calculator.UI.ViewModels
         private bool isResultDisplayed;
         private HistoryWindow? historyWindow;
         private readonly HistoryService historyService;
+
+        // IHistoryProvider 구현
+        public HistoryService HistoryService => historyService;
 
         // 속성
         public string Display
@@ -42,6 +45,17 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public void RemoveHistoryItem(HistoryItem item)
+        {
+            historyService.Remove(item);
+        }
+
+        public void ClearHistory()
+        {
+            historyService.Clear();
+        }
+
 
         // HistoryService의 Items를 직접 노출
         public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
@@ -79,7 +93,6 @@ namespace Calculator.UI.ViewModels
 
             InitializeCommands();
             CloseCommand = new RelayCommand(CloseWindow);
-
         }
 
         private void InitializeCommands()
@@ -450,7 +463,7 @@ namespace Calculator.UI.ViewModels
             historyWindow.Show(); // ShowDialog() 대신 Show() 사용
         }
 
-        // HistoryService 외부 노출
+        // HistoryService 외부 노출 - 하위 호환성을 위해 유지
         public HistoryService History => historyService;
 
         // INotifyPropertyChanged 구현

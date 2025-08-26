@@ -1,6 +1,8 @@
-﻿using Calculator.Core.Services;
+﻿using Calculator.Core.Models;
+using Calculator.Core.Services;
 using Calculator.UI.Views;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -8,13 +10,20 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class BaseConverterViewModel : INotifyPropertyChanged
+    public class BaseConverterViewModel : INotifyPropertyChanged, IHistoryProvider
     {
         private string inputValue = "0";
         private int currentBase = 10;
         private long decimalValue = 0;
         private HistoryWindow? historyWindow;
         private readonly HistoryService historyService;
+
+        // IHistoryProvider 구현
+        public HistoryService HistoryService => historyService;
+
+        // HistoryService의 Items를 직접 노출 (기존 코드와의 호환성)
+        public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
+
         public string InputValue
         {
             get => inputValue;
@@ -165,14 +174,18 @@ namespace Calculator.UI.ViewModels
         public ICommand? OpenMenuCommand { get; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
+        public ICommand? ToggleSignCommand { get; private set; }
+
         public BaseConverterViewModel()
         {
+            historyService = new HistoryService();
             InitializeCommands();
             UpdateDigitAvailability();
-            historyService = new HistoryService();
 
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
+
+        // Remove IHistoryProvider implementation methods since we use HistoryService directly
 
         private void InitializeCommands()
         {
@@ -182,6 +195,7 @@ namespace Calculator.UI.ViewModels
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
+            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
             ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
         }
 
@@ -201,10 +215,17 @@ namespace Calculator.UI.ViewModels
             string? digit = parameter?.ToString();
             if (string.IsNullOrEmpty(digit)) return;
 
+            string oldValue = InputValue;
             if (InputValue == "0")
                 InputValue = digit;
             else
                 InputValue += digit;
+
+            // Add conversion to history when input changes
+            if (InputValue != oldValue && InputValue != "0")
+            {
+                AddConversionToHistory();
+            }
         }
 
         private void ExecuteClear(object? parameter)
@@ -224,6 +245,9 @@ namespace Calculator.UI.ViewModels
         {
             string result = $"BIN: {BinaryOutput}\nOCT: {OctalOutput}\nDEC: {DecimalOutput}\nHEX: {HexOutput}";
             Clipboard.SetText(result);
+
+            // Add copy action to history
+            historyService.Add($"Copy: {GetCurrentBaseString()}{InputValue}", CalcValue.Create(decimalValue));
         }
 
         private void ExecutePaste(object? parameter)
@@ -232,8 +256,22 @@ namespace Calculator.UI.ViewModels
             {
                 string clipboardText = Clipboard.GetText().Trim();
                 if (IsValidInput(clipboardText))
+                {
+                    string oldValue = InputValue;
                     InputValue = clipboardText;
+
+                    // Add paste action to history
+                    if (InputValue != oldValue)
+                    {
+                        historyService.Add($"Paste: {GetCurrentBaseString()}{InputValue}", CalcValue.Create(decimalValue));
+                    }
+                }
             }
+        }
+
+        private void ExecuteToggleSign(object? parameter)
+        {
+            // Toggle sign functionality if needed
         }
 
         private void UpdateDigitAvailability()
@@ -282,10 +320,31 @@ namespace Calculator.UI.ViewModels
                 return false;
             }
         }
+
+        private void AddConversionToHistory()
+        {
+            string baseString = GetCurrentBaseString();
+            string expression = $"{baseString}{InputValue} = DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
+            historyService.Add(expression, CalcValue.Create(decimalValue));
+        }
+
+        private string GetCurrentBaseString()
+        {
+            return currentBase switch
+            {
+                2 => "BIN: ",
+                8 => "OCT: ",
+                10 => "DEC: ",
+                16 => "HEX: ",
+                _ => ""
+            };
+        }
+
         private void ExecuteClearHistory(object? parameter)
         {
             historyService.Clear();
         }
+
         private void ExecuteShowHistory(object? parameter)
         {
             // 이미 열려있는 창이 있으면 앞으로 가져오기
