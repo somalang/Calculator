@@ -148,7 +148,7 @@ namespace Calculator.UI.ViewModels
             // Mode
             ToggleAngleModeCommand = new RelayCommand(ExecuteToggleAngleMode);
         }
-        private void OpenMenu(object parameter)
+        private void OpenMenu(object? parameter)
         {
             if (parameter is Window currentWindow)
             {
@@ -158,7 +158,7 @@ namespace Calculator.UI.ViewModels
                 currentWindow.Close();
             }
         }
-        private void ExecuteNumber(object parameter)
+        private void ExecuteNumber(object? parameter)
         {
             string? number = parameter?.ToString();
             if (string.IsNullOrEmpty(number)) return;
@@ -176,7 +176,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteOperator(object parameter)
+        private void ExecuteOperator(object? parameter)
         {
             string? operatorSymbol = parameter?.ToString();
             if (string.IsNullOrEmpty(operatorSymbol)) return;
@@ -193,7 +193,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteEquals(object parameter)
+        private void ExecuteEquals(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -213,7 +213,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClear(object parameter)
+        private void ExecuteClear(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -231,14 +231,14 @@ namespace Calculator.UI.ViewModels
             isResultDisplayed = false;
         }
 
-        private void ExecuteClearAll(object parameter)
+        private void ExecuteClearAll(object? parameter)
         {
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
         }
 
-        private void ExecuteBackspace(object parameter)
+        private void ExecuteBackspace(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -246,27 +246,27 @@ namespace Calculator.UI.ViewModels
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
 
-        private void ExecuteSqrt(object parameter)
+        private void ExecuteSqrt(object? parameter)
         {
             ExecuteFunction("sqrt");
         }
 
-        private void ExecuteSquare(object parameter)
+        private void ExecuteSquare(object? parameter)
         {
             ExecuteFunction("sqr");
         }
 
-        private void ExecuteReciprocal(object parameter)
+        private void ExecuteReciprocal(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Reciprocal, "1/");
         }
 
-        private void ExecutePercent(object parameter)
+        private void ExecutePercent(object? parameter)
         {
             ExecuteUnaryOperation(calculator.Percent, "%");
         }
 
-        private void ExecuteLeftParen(object parameter)
+        private void ExecuteLeftParen(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -278,7 +278,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteRightParen(object parameter)
+        private void ExecuteRightParen(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -286,7 +286,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteToggleSign(object parameter)
+        private void ExecuteToggleSign(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -306,79 +306,79 @@ namespace Calculator.UI.ViewModels
         }
 
         // Rounding functions
-        private void ExecuteRound(object parameter)
+        private void ExecuteRound(object? parameter)
         {
             ExecuteFunction("round");
         }
 
-        private void ExecuteFloor(object parameter)
+        private void ExecuteFloor(object? parameter)
         {
             ExecuteFunction("floor");
         }
 
-        private void ExecuteCeil(object parameter)
+        private void ExecuteCeil(object? parameter)
         {
             ExecuteFunction("ceil");
         }
 
-        private void ExecuteAbs(object parameter)
+        private void ExecuteAbs(object? parameter)
         {
             ExecuteFunction("abs");
         }
 
-        private void ExecuteSign(object parameter)
+        private void ExecuteSign(object? parameter)
         {
             ExecuteFunction("sign");
         }
 
         // Trigonometric functions
-        private void ExecuteSin(object parameter)
+        private void ExecuteSin(object? parameter)
         {
             ExecuteFunction("sin");
         }
 
-        private void ExecuteCos(object parameter)
+        private void ExecuteCos(object? parameter)
         {
             ExecuteFunction("cos");
         }
 
-        private void ExecuteTan(object parameter)
+        private void ExecuteTan(object? parameter)
         {
             ExecuteFunction("tan");
         }
 
-        private void ExecuteAsin(object parameter)
+        private void ExecuteAsin(object? parameter)
         {
             ExecuteFunction("asin");
         }
 
-        private void ExecuteAcos(object parameter)
+        private void ExecuteAcos(object? parameter)
         {
             ExecuteFunction("acos");
         }
 
-        private void ExecuteAtan(object parameter)
+        private void ExecuteAtan(object? parameter)
         {
             ExecuteFunction("atan");
         }
 
         // Logarithmic functions
-        private void ExecuteLog(object parameter)
+        private void ExecuteLog(object? parameter)
         {
             ExecuteFunction("log");
         }
 
-        private void ExecuteLn(object parameter)
+        private void ExecuteLn(object? parameter)
         {
             ExecuteFunction("ln");
         }
 
-        private void ExecuteExp(object parameter)
+        private void ExecuteExp(object? parameter)
         {
             ExecuteFunction("exp");
         }
 
-        private void ExecutePow(object parameter)
+        private void ExecutePow(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -393,7 +393,7 @@ namespace Calculator.UI.ViewModels
         }
 
         // Constants
-        private void ExecutePi(object parameter)
+        private void ExecutePi(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -405,7 +405,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteE(object parameter)
+        private void ExecuteE(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -418,7 +418,7 @@ namespace Calculator.UI.ViewModels
         }
 
         // Mode toggle
-        private void ExecuteToggleAngleMode(object parameter)
+        private void ExecuteToggleAngleMode(object? parameter)
         {
             IsRadianMode = !IsRadianMode;
         }
