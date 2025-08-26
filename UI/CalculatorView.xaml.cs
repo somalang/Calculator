@@ -8,5 +8,13 @@ namespace Calculator.UI.Views
         {
             InitializeComponent();
         }
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            MenuWindow menuWindow = new MenuWindow();
+            menuWindow.Show();
+            this.Close(); // 현재 창 닫기
+        }
+
     }
+
 }

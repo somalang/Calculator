@@ -283,16 +283,16 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="BIN:" FontWeight="SemiBold" VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BinaryOutput}" Style="{StaticResource DisplayTextBoxStyle}" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BinaryOutput, Mode=OneWay}" Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="OCT:" FontWeight="SemiBold" VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OctalOutput}" Style="{StaticResource DisplayTextBoxStyle}" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OctalOutput, Mode=OneWay}" Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="DEC:" FontWeight="SemiBold" VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DecimalOutput}" Style="{StaticResource DisplayTextBoxStyle}" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DecimalOutput, Mode=OneWay}" Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="HEX:" FontWeight="SemiBold" VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding HexOutput}" Style="{StaticResource DisplayTextBoxStyle}" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding HexOutput, Mode=OneWay}" Style="{StaticResource DisplayTextBoxStyle}" />
             </Grid>
         </GroupBox>
 

@@ -28,7 +28,7 @@ namespace Calculator.UI.ViewModels
         private void ExecuteStandardCalculator(object parameter)
         {
             // 기본 계산기는 이미 메인 창에 있으므로 메뉴만 닫음
-            ((Window)owner).Close();
+            owner.Close();
         }
 
         private void ExecuteAdvancedCalculator(object parameter)
@@ -36,7 +36,7 @@ namespace Calculator.UI.ViewModels
             var advancedWindow = new AdvancedCalculatorWindow();
             advancedWindow.Owner = Application.Current.MainWindow;
             advancedWindow.Show();
-            ((Window)owner).Close();
+            owner.Close();
         }
 
         private void ExecuteBaseConverter(object parameter)
@@ -44,7 +44,7 @@ namespace Calculator.UI.ViewModels
             var baseConverterWindow = new BaseConverterWindow();
             baseConverterWindow.Owner = Application.Current.MainWindow;
             baseConverterWindow.Show();
-            ((Window)owner).Close();
+            owner.Close();
         }
 
         private void ExecuteBitOperations(object parameter)
@@ -52,7 +52,7 @@ namespace Calculator.UI.ViewModels
             var bitOperationsWindow = new BitOperationsWindow();
             bitOperationsWindow.Owner = Application.Current.MainWindow;
             bitOperationsWindow.Show();
-            ((Window)owner).Close();
+            owner.Close();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
