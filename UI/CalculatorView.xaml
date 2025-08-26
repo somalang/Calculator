@@ -84,6 +84,18 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="CloseButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#4A90E2" />
+            <Setter Property="Foreground" Value="White" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#357ABD"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Border CornerRadius="15"
@@ -94,8 +106,8 @@
         <Grid Margin="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
-                <RowDefinition Height="70" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="101.01" />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
@@ -143,12 +155,11 @@
                          IsReadOnly="True"
                          TextAlignment="Right"
                          VerticalAlignment="Center"
-                         HorizontalAlignment="Stretch"
-                         Padding="15,0" />
+                         Padding="15,0" TextChanged="TextBox_TextChanged" Height="76" />
             </Border>
 
             <UniformGrid Grid.Row="2"
-                         Rows="6"
+                         Rows="7"
                          Columns="4">
                 <Button Content="%"
                         Command="{Binding PercentCommand}"
@@ -244,6 +255,11 @@
                 <Button Content="="
                         Command="{Binding EqualsCommand}"
                         Style="{StaticResource EqualsButtonStyle}" />
+                <!-- Close Button -->
+                <Button Content="Close" 
+                         Command="{Binding CloseCommand}"
+                         Style="{StaticResource CloseButtonStyle}" Margin="2,2,-208,0" />
+
             </UniformGrid>
         </Grid>
     </Border>

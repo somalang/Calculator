@@ -15,6 +15,10 @@ namespace Calculator.UI.Views
             this.Close(); // 현재 창 닫기
         }
 
+        private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
     }
 
 }
