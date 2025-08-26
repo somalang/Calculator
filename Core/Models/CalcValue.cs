@@ -16,7 +16,7 @@ namespace Calculator.Core.Models
         }
 
         // 암시적 변환 연산자
-        public static implicit operator decimal(CalcValue calcValue)
+        public static implicit operator decimal(CalcValue? calcValue)
         {
             return calcValue?.value ?? 0;
         }
@@ -26,56 +26,53 @@ namespace Calculator.Core.Models
             return new CalcValue(value);
         }
 
-        // 연산자 재정의 (과제 조건)
-        public static CalcValue operator +(CalcValue left, CalcValue right)
+        // 연산자 재정의
+        public static CalcValue operator +(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) throw new ArgumentNullException();
+            if (left is null || right is null) throw new ArgumentNullException();
             return new CalcValue(left.value + right.value);
         }
 
-        public static CalcValue operator -(CalcValue left, CalcValue right)
+        public static CalcValue operator -(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) throw new ArgumentNullException();
+            if (left is null || right is null) throw new ArgumentNullException();
             return new CalcValue(left.value - right.value);
         }
 
-        public static CalcValue operator *(CalcValue left, CalcValue right)
+        public static CalcValue operator *(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) throw new ArgumentNullException();
+            if (left is null || right is null) throw new ArgumentNullException();
             return new CalcValue(left.value * right.value);
         }
 
-        public static CalcValue operator /(CalcValue left, CalcValue right)
+        public static CalcValue operator /(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) throw new ArgumentNullException();
+            if (left is null || right is null) throw new ArgumentNullException();
             if (right.value == 0) throw new DivideByZeroException("0으로 나눌 수 없습니다");
             return new CalcValue(left.value / right.value);
         }
 
         // 단항 연산자
-        public static CalcValue operator -(CalcValue value)
+        public static CalcValue operator -(CalcValue? value)
         {
-            if (value == null) throw new ArgumentNullException();
+            if (value is null) throw new ArgumentNullException();
             return new CalcValue(-value.value);
         }
 
-        public static CalcValue operator +(CalcValue value)
+        public static CalcValue operator +(CalcValue? value)
         {
-            if (value == null) throw new ArgumentNullException();
+            if (value is null) throw new ArgumentNullException();
             return new CalcValue(+value.value);
         }
 
-        // 기타 연산 메서드들 (Evaluator에서 사용)
+        // 기타 연산 메서드
         public CalcValue Sqrt()
         {
             if (value < 0) throw new InvalidOperationException("음수의 제곱근을 구할 수 없습니다");
             return new CalcValue((decimal)Math.Sqrt((double)value));
         }
 
-        public CalcValue Square()
-        {
-            return new CalcValue(value * value);
-        }
+        public CalcValue Square() => new CalcValue(value * value);
 
         public CalcValue Reciprocal()
         {
@@ -83,77 +80,53 @@ namespace Calculator.Core.Models
             return new CalcValue(1 / value);
         }
 
-        public CalcValue Percent()
-        {
-            return new CalcValue(value / 100);
-        }
+        public CalcValue Percent() => new CalcValue(value / 100);
 
         // 비교 연산자
-        public static bool operator ==(CalcValue left, CalcValue right)
+        public static bool operator ==(CalcValue? left, CalcValue? right)
         {
             if (ReferenceEquals(left, right)) return true;
             if (left is null || right is null) return false;
             return left.Equals(right);
         }
 
-        public static bool operator !=(CalcValue left, CalcValue right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(CalcValue? left, CalcValue? right) => !(left == right);
 
-        public static bool operator >(CalcValue left, CalcValue right)
+        public static bool operator >(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) return false;
+            if (left is null || right is null) return false;
             return left.value > right.value;
         }
 
-        public static bool operator <(CalcValue left, CalcValue right)
+        public static bool operator <(CalcValue? left, CalcValue? right)
         {
-            if (left == null || right == null) return false;
+            if (left is null || right is null) return false;
             return left.value < right.value;
         }
 
-        public static bool operator >=(CalcValue left, CalcValue right)
-        {
-            return left > right || left == right;
-        }
+        public static bool operator >=(CalcValue? left, CalcValue? right) => left > right || left == right;
 
-        public static bool operator <=(CalcValue left, CalcValue right)
-        {
-            return left < right || left == right;
-        }
+        public static bool operator <=(CalcValue? left, CalcValue? right) => left < right || left == right;
 
-        // CLR 구조 활용 - 인터페이스 구현
-        public int CompareTo(CalcValue other)
+        // 인터페이스 구현 (nullable 반영)
+        public int CompareTo(CalcValue? other)
         {
-            if (other == null) return 1;
+            if (other is null) return 1;
             return value.CompareTo(other.value);
         }
 
-        public bool Equals(CalcValue other)
+        public bool Equals(CalcValue? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             return value.Equals(other.value);
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as CalcValue);
-        }
+        public override bool Equals(object? obj) => Equals(obj as CalcValue);
 
-        public override int GetHashCode()
-        {
-            return value.GetHashCode();
-        }
+        public override int GetHashCode() => value.GetHashCode();
 
-        public override string ToString()
-        {
-            return value.ToString();
-        }
+        public override string ToString() => value.ToString();
 
-        public string ToString(string format)
-        {
-            return value.ToString(format);
-        }
+        public string ToString(string format) => value.ToString(format);
     }
 }

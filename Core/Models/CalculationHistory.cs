@@ -29,7 +29,7 @@ namespace Calculator.Core.Models
             items.Clear();
         }
 
-        public HistoryItem GetLastItem()
+        public HistoryItem? GetLastItem()
         {
             return items.Count > 0 ? items[^1] : null;
         }
@@ -37,8 +37,8 @@ namespace Calculator.Core.Models
 
     public class HistoryItem
     {
-        public string Expression { get; set; }
-        public CalcValue Result { get; set; }
+        public string? Expression { get; set; }
+        public CalcValue? Result { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }

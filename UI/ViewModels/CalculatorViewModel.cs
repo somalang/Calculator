@@ -15,11 +15,11 @@ namespace Calculator.UI.ViewModels
     public class CalculatorViewModel : INotifyPropertyChanged
     {
         // 필드
-        private string display;
-        private string currentInput;
+        private string display = string.Empty;
+        private string currentInput = string.Empty;
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
-        private HistoryWindow historyWindow;
+        private HistoryWindow? historyWindow;
         private readonly HistoryService historyService;
 
         // 속성
@@ -47,35 +47,39 @@ namespace Calculator.UI.ViewModels
         public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
 
         // 명령들
-        public ICommand NumberCommand { get; private set; }
-        public ICommand OperatorCommand { get; private set; }
-        public ICommand EqualsCommand { get; private set; }
-        public ICommand ClearCommand { get; private set; }
-        public ICommand ClearAllCommand { get; private set; }
-        public ICommand BackspaceCommand { get; private set; }
-        public ICommand SqrtCommand { get; private set; }
-        public ICommand SquareCommand { get; private set; }
-        public ICommand ReciprocalCommand { get; private set; }
-        public ICommand PercentCommand { get; private set; }
-        public ICommand LeftParenCommand { get; private set; }
-        public ICommand RightParenCommand { get; private set; }
-        public ICommand ToggleSignCommand { get; private set; }
-        public ICommand ClearHistoryCommand { get; private set; }
-        public ICommand CopyCommand { get; private set; }
-        public ICommand PasteCommand { get; private set; }
-        public ICommand KeyPressCommand { get; private set; }
-        public ICommand ShowHistoryCommand { get; private set; }
+        public ICommand? NumberCommand { get; private set; }
+        public ICommand? OperatorCommand { get; private set; }
+        public ICommand? EqualsCommand { get; private set; }
+        public ICommand? ClearCommand { get; private set; }
+        public ICommand? ClearAllCommand { get; private set; }
+        public ICommand? BackspaceCommand { get; private set; }
+        public ICommand? SqrtCommand { get; private set; }
+        public ICommand? SquareCommand { get; private set; }
+        public ICommand? ReciprocalCommand { get; private set; }
+        public ICommand? PercentCommand { get; private set; }
+        public ICommand? LeftParenCommand { get; private set; }
+        public ICommand? RightParenCommand { get; private set; }
+        public ICommand? ToggleSignCommand { get; private set; }
+        public ICommand? ClearHistoryCommand { get; private set; }
+        public ICommand? CopyCommand { get; private set; }
+        public ICommand? PasteCommand { get; private set; }
+        public ICommand? KeyPressCommand { get; private set; }
+        public ICommand? ShowHistoryCommand { get; private set; }
+        public ICommand? CloseCommand { get; }
 
         // 생성자 - 하나로 통합
         public CalculatorViewModel()
         {
             calculator = new StandardCalculator();
             historyService = new HistoryService();
+
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
 
             InitializeCommands();
+            CloseCommand = new RelayCommand(CloseWindow);
+
         }
 
         private void InitializeCommands()
@@ -101,9 +105,18 @@ namespace Calculator.UI.ViewModels
         }
 
         // 명령 구현들
-        private void ExecuteNumber(object parameter)
+        private void CloseWindow(object? parameter)
         {
-            string number = parameter?.ToString();
+            // 현재 열려 있는 창을 닫음
+            Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)
+                ?.Close();
+        }
+
+        private void ExecuteNumber(object? parameter)
+        {
+            string? number = parameter?.ToString();
             if (string.IsNullOrEmpty(number)) return;
 
             if (isResultDisplayed)
@@ -119,9 +132,9 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteOperator(object parameter)
+        private void ExecuteOperator(object? parameter)
         {
-            string operatorSymbol = parameter?.ToString();
+            string? operatorSymbol = parameter?.ToString();
             if (string.IsNullOrEmpty(operatorSymbol)) return;
 
             if (isResultDisplayed)
@@ -136,7 +149,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteEquals(object parameter)
+        private void ExecuteEquals(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -159,7 +172,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClear(object parameter)
+        private void ExecuteClear(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -177,14 +190,14 @@ namespace Calculator.UI.ViewModels
             isResultDisplayed = false;
         }
 
-        private void ExecuteClearAll(object parameter)
+        private void ExecuteClearAll(object? parameter)
         {
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
         }
 
-        private void ExecuteBackspace(object parameter)
+        private void ExecuteBackspace(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -192,7 +205,7 @@ namespace Calculator.UI.ViewModels
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
 
-        private void ExecuteSqrt(object parameter)
+        private void ExecuteSqrt(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -200,7 +213,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteSquare(object parameter)
+        private void ExecuteSquare(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -208,7 +221,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteReciprocal(object parameter)
+        private void ExecuteReciprocal(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -232,7 +245,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecutePercent(object parameter)
+        private void ExecutePercent(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -256,7 +269,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteLeftParen(object parameter)
+        private void ExecuteLeftParen(object? parameter)
         {
             if (isResultDisplayed)
             {
@@ -268,7 +281,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteRightParen(object parameter)
+        private void ExecuteRightParen(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -276,7 +289,7 @@ namespace Calculator.UI.ViewModels
             Display = CurrentInput;
         }
 
-        private void ExecuteToggleSign(object parameter)
+        private void ExecuteToggleSign(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
 
@@ -295,12 +308,12 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteClearHistory(object parameter)
+        private void ExecuteClearHistory(object? parameter)
         {
             historyService.Clear();
         }
 
-        private void ExecuteCopy(object parameter)
+        private void ExecuteCopy(object? parameter)
         {
             try
             {
@@ -312,7 +325,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecutePaste(object parameter)
+        private void ExecutePaste(object? parameter)
         {
             try
             {
@@ -331,7 +344,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteKeyPress(object parameter)
+        private void ExecuteKeyPress(object? parameter)
         {
             if (parameter is KeyEventArgs keyArgs)
             {
@@ -420,7 +433,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void ExecuteShowHistory(object parameter)
+        private void ExecuteShowHistory(object? parameter)
         {
             // 이미 열려있는 창이 있으면 앞으로 가져오기
             if (historyWindow != null)
@@ -441,9 +454,9 @@ namespace Calculator.UI.ViewModels
         public HistoryService History => historyService;
 
         // INotifyPropertyChanged 구현
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
