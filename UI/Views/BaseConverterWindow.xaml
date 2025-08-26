@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
         Title="Number Base Converter"
-        Height="500"
+        Height="841"
         Width="450"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"

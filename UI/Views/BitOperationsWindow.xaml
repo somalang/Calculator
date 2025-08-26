@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
         Title="Bit Operations Calculator"
-        Height="600"
-        Width="500"
+        Height="647"
+        Width="623"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         MinHeight="500"
@@ -133,12 +133,12 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="2" Text="BIN:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding OperandABinary}"
+                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding OperandABinary, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <TextBlock Grid.Row="0" Grid.Column="4" Text="HEX:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding OperandAHex}"
+                <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding OperandAHex, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <!-- Operand B -->
@@ -149,12 +149,12 @@
 
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="BIN:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding OperandBBinary}"
+                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding OperandBBinary, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <TextBlock Grid.Row="1" Grid.Column="4" Text="HEX:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding OperandBHex}"
+                <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding OperandBHex, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
             </Grid>
         </GroupBox>
@@ -177,7 +177,7 @@
                         Style="{StaticResource OperationButtonStyle}" />
                 <Button Content="Right Shift (A >> B)" Command="{Binding RightShiftCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
-				<Button Content="Swap A &#8596; B" Command="{Binding SwapCommand}"
+                <Button Content="Swap A &#8596; B" Command="{Binding SwapCommand}"
                         Style="{StaticResource FunctionButtonStyle}" />
             </UniformGrid>
         </GroupBox>
@@ -198,19 +198,19 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="DEC:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ResultDecimal}" 
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ResultDecimal, Mode=OneWay}" 
                          Style="{StaticResource DisplayTextBoxStyle}" FontSize="16" Height="35" />
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="HEX:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="50" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ResultHex}" 
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ResultHex, Mode=OneWay}" 
                          Style="{StaticResource DisplayTextBoxStyle}" FontSize="16" Height="35" />
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="BIN:" FontWeight="SemiBold" 
                            VerticalAlignment="Top" Width="50" Margin="0,5,0,0" />
                 <ScrollViewer Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Auto" 
                               HorizontalScrollBarVisibility="Auto" Margin="0,2" Height="60">
-                    <TextBox Text="{Binding ResultBinary}" 
+                    <TextBox Text="{Binding ResultBinary, Mode=OneWay}" 
                              Style="{StaticResource DisplayTextBoxStyle}"
                              FontFamily="Consolas" FontSize="12"
                              TextWrapping="Wrap" Height="Auto" />

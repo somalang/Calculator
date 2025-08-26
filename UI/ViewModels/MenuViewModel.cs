@@ -27,14 +27,23 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteStandardCalculator(object parameter)
         {
-            // 기본 계산기는 이미 메인 창에 있으므로 메뉴만 닫음
+            // 메인 창이 이미 존재하면 메뉴만 닫음
+            var mainWindow = Application.Current.MainWindow;
+            if (mainWindow == null || mainWindow is not CalculatorView)
+            {
+                var standardWindow = new CalculatorView();
+                //standardWindow.Owner = mainWindow ?? owner;
+                standardWindow.Show();
+                Application.Current.MainWindow = standardWindow;
+            }
+
             owner.Close();
         }
 
         private void ExecuteAdvancedCalculator(object parameter)
         {
             var advancedWindow = new AdvancedCalculatorWindow();
-            advancedWindow.Owner = Application.Current.MainWindow;
+            //advancedWindow.Owner = Application.Current.MainWindow ?? owner;
             advancedWindow.Show();
             owner.Close();
         }
@@ -42,7 +51,7 @@ namespace Calculator.UI.ViewModels
         private void ExecuteBaseConverter(object parameter)
         {
             var baseConverterWindow = new BaseConverterWindow();
-            baseConverterWindow.Owner = Application.Current.MainWindow;
+            //baseConverterWindow.Owner = Application.Current.MainWindow ?? owner;
             baseConverterWindow.Show();
             owner.Close();
         }
@@ -50,7 +59,7 @@ namespace Calculator.UI.ViewModels
         private void ExecuteBitOperations(object parameter)
         {
             var bitOperationsWindow = new BitOperationsWindow();
-            bitOperationsWindow.Owner = Application.Current.MainWindow;
+            //bitOperationsWindow.Owner = Application.Current.MainWindow ?? owner;
             bitOperationsWindow.Show();
             owner.Close();
         }
