@@ -1,16 +1,19 @@
 ﻿using Calculator.Core.Engine;
 using Calculator.Core.Models;
+using Calculator.UI.Views;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
     public class AdvancedCalculatorViewModel : INotifyPropertyChanged
     {
-        private string display;
-        private string currentInput;
+        private string display = string.Empty;
+        private string currentInput = string.Empty;
+
         private readonly AdvancedCalculator calculator;
         private bool isResultDisplayed;
         private bool isRadianMode = true;
@@ -44,49 +47,50 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+        public ICommand? OpenMenuCommand { get; }
 
         // Commands
-        public ICommand NumberCommand { get; private set; }
-        public ICommand OperatorCommand { get; private set; }
-        public ICommand EqualsCommand { get; private set; }
-        public ICommand ClearCommand { get; private set; }
-        public ICommand ClearAllCommand { get; private set; }
-        public ICommand BackspaceCommand { get; private set; }
-        public ICommand SqrtCommand { get; private set; }
-        public ICommand SquareCommand { get; private set; }
-        public ICommand ReciprocalCommand { get; private set; }
-        public ICommand PercentCommand { get; private set; }
-        public ICommand LeftParenCommand { get; private set; }
-        public ICommand RightParenCommand { get; private set; }
-        public ICommand ToggleSignCommand { get; private set; }
+        public ICommand? NumberCommand { get; private set; }
+        public ICommand? OperatorCommand { get; private set; }
+        public ICommand? EqualsCommand { get; private set; }
+        public ICommand? ClearCommand { get; private set; }
+        public ICommand? ClearAllCommand { get; private set; }
+        public ICommand? BackspaceCommand { get; private set; }
+        public ICommand? SqrtCommand { get; private set; }
+        public ICommand? SquareCommand { get; private set; }
+        public ICommand? ReciprocalCommand { get; private set; }
+        public ICommand? PercentCommand { get; private set; }
+        public ICommand? LeftParenCommand { get; private set; }
+        public ICommand? RightParenCommand { get; private set; }
+        public ICommand? ToggleSignCommand { get; private set; }
 
         // Rounding functions
-        public ICommand RoundCommand { get; private set; }
-        public ICommand FloorCommand { get; private set; }
-        public ICommand CeilCommand { get; private set; }
-        public ICommand AbsCommand { get; private set; }
-        public ICommand SignCommand { get; private set; }
+        public ICommand? RoundCommand { get; private set; }
+        public ICommand? FloorCommand { get; private set; }
+        public ICommand? CeilCommand { get; private set; }
+        public ICommand? AbsCommand { get; private set; }
+        public ICommand? SignCommand { get; private set; }
 
         // Trigonometric functions
-        public ICommand SinCommand { get; private set; }
-        public ICommand CosCommand { get; private set; }
-        public ICommand TanCommand { get; private set; }
-        public ICommand AsinCommand { get; private set; }
-        public ICommand AcosCommand { get; private set; }
-        public ICommand AtanCommand { get; private set; }
+        public ICommand? SinCommand { get; private set; }
+        public ICommand? CosCommand { get; private set; }
+        public ICommand? TanCommand { get; private set; }
+        public ICommand? AsinCommand { get; private set; }
+        public ICommand? AcosCommand { get; private set; }
+        public ICommand? AtanCommand { get; private set; }
 
         // Logarithmic functions
-        public ICommand LogCommand { get; private set; }
-        public ICommand LnCommand { get; private set; }
-        public ICommand ExpCommand { get; private set; }
-        public ICommand PowCommand { get; private set; }
+        public ICommand? LogCommand { get; private set; }
+        public ICommand? LnCommand { get; private set; }
+        public ICommand? ExpCommand { get; private set; }
+        public ICommand? PowCommand { get; private set; }
 
         // Constants
-        public ICommand PiCommand { get; private set; }
-        public ICommand ECommand { get; private set; }
+        public ICommand? PiCommand { get; private set; }
+        public ICommand? ECommand { get; private set; }
 
         // Mode toggle
-        public ICommand ToggleAngleModeCommand { get; private set; }
+        public ICommand? ToggleAngleModeCommand { get; private set; }
 
         public AdvancedCalculatorViewModel()
         {
@@ -96,6 +100,8 @@ namespace Calculator.UI.ViewModels
             isResultDisplayed = false;
 
             InitializeCommands();
+            OpenMenuCommand = new RelayCommand(OpenMenu);
+
         }
 
         private void InitializeCommands()
@@ -142,10 +148,19 @@ namespace Calculator.UI.ViewModels
             // Mode
             ToggleAngleModeCommand = new RelayCommand(ExecuteToggleAngleMode);
         }
+        private void OpenMenu(object parameter)
+        {
+            if (parameter is Window currentWindow)
+            {
+                var menuWindow = new MenuWindow();
+                menuWindow.Show();
 
+                currentWindow.Close();
+            }
+        }
         private void ExecuteNumber(object parameter)
         {
-            string number = parameter?.ToString();
+            string? number = parameter?.ToString();
             if (string.IsNullOrEmpty(number)) return;
 
             if (isResultDisplayed)
@@ -163,7 +178,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteOperator(object parameter)
         {
-            string operatorSymbol = parameter?.ToString();
+            string? operatorSymbol = parameter?.ToString();
             if (string.IsNullOrEmpty(operatorSymbol)) return;
 
             if (isResultDisplayed)
@@ -438,9 +453,9 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

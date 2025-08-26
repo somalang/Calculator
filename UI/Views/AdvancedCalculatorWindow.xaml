@@ -86,6 +86,20 @@
 		</Grid.RowDefinitions>
 
 		<!-- Header -->
+		<Button
+            Command="{Binding OpenMenuCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+            Style="{StaticResource FunctionButtonStyle}"
+            Background="Transparent"
+            BorderThickness="0"
+            Padding="0"
+            HorizontalAlignment="Left">
+			<StackPanel Orientation="Horizontal">
+				<Ellipse Width="8" Height="8" Fill="#D0D0D0" Margin="3,0" />
+				<Ellipse Width="8" Height="8" Fill="#D0D0D0" Margin="3,0" />
+				<Ellipse Width="8" Height="8" Fill="#D0D0D0" Margin="3,0" />
+			</StackPanel>
+		</Button>
 		<TextBlock Grid.Row="0" Text="Advanced Calculator" 
                    FontSize="18" FontWeight="SemiBold" 
                    HorizontalAlignment="Center" Margin="0,0,0,10"/>
