@@ -116,6 +116,18 @@
                    FontSize="18" FontWeight="SemiBold" 
                    HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
+        <Button Grid.Column="1" Width="30" Height="30" 
+             Command="{Binding ShowHistoryCommand}"
+             Style="{StaticResource FunctionButtonStyle}"
+             HorizontalAlignment="Right" Margin="5,0,0,0">  
+            <Viewbox Width="16" Height="16">
+                <Canvas Width="24" Height="24">
+                    <!-- 시계 아이콘 경로 -->
+                    <Path Fill="Black"  
+                     Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                </Canvas>
+            </Viewbox>
+        </Button>
         <!-- Current Operation Display -->
         <Border Grid.Row="1" Background="#2C2C2C" CornerRadius="6" Padding="10" Margin="0,0,0,10">
             <TextBlock Text="{Binding CurrentOperation, StringFormat='Current Operation: {0}'}" 

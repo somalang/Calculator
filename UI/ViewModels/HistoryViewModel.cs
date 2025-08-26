@@ -11,6 +11,7 @@ namespace Calculator.UI.ViewModels
     public class HistoryViewModel : INotifyPropertyChanged
     {
         private readonly CalculatorViewModel calculatorViewModel;
+        private readonly BitOperationsViewModel? bitViewModel;
         private readonly Window window;
         private HistoryItem? selectedHistoryItem;
 

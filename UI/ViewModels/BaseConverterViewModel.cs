@@ -1,4 +1,5 @@
-﻿using Calculator.UI.Views;
+﻿using Calculator.Core.Services;
+using Calculator.UI.Views;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -12,7 +13,8 @@ namespace Calculator.UI.ViewModels
         private string inputValue = "0";
         private int currentBase = 10;
         private long decimalValue = 0;
-
+        private HistoryWindow? historyWindow;
+        private readonly HistoryService historyService;
         public string InputValue
         {
             get => inputValue;
@@ -161,11 +163,14 @@ namespace Calculator.UI.ViewModels
         public ICommand? CopyCommand { get; private set; }
         public ICommand? PasteCommand { get; private set; }
         public ICommand? OpenMenuCommand { get; }
-
+        public ICommand? ClearHistoryCommand { get; private set; }
+        public ICommand? ShowHistoryCommand { get; private set; }
         public BaseConverterViewModel()
         {
             InitializeCommands();
             UpdateDigitAvailability();
+            historyService = new HistoryService();
+
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 
@@ -176,6 +181,8 @@ namespace Calculator.UI.ViewModels
             BackspaceCommand = new RelayCommand(ExecuteBackspace);
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
+            ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
+            ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
         }
 
         private void OpenMenu(object? parameter)
@@ -274,6 +281,26 @@ namespace Calculator.UI.ViewModels
             {
                 return false;
             }
+        }
+        private void ExecuteClearHistory(object? parameter)
+        {
+            historyService.Clear();
+        }
+        private void ExecuteShowHistory(object? parameter)
+        {
+            // 이미 열려있는 창이 있으면 앞으로 가져오기
+            if (historyWindow != null)
+            {
+                historyWindow.Activate();
+                historyWindow.Focus();
+                return;
+            }
+
+            // 새 히스토리 창 생성 (모달리스)
+            historyWindow = new HistoryWindow(this);
+            historyWindow.Owner = Application.Current.MainWindow;
+            historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
+            historyWindow.Show(); // ShowDialog() 대신 Show() 사용
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
