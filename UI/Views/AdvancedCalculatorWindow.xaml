@@ -3,99 +3,99 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
         Title="Advanced Calculator"
-        Height="600"
-        Width="400"
+        Height="781"
+        Width="483"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="White">
 
-    <Window.DataContext>
-        <vm:AdvancedCalculatorViewModel />
-    </Window.DataContext>
+	<Window.DataContext>
+		<vm:AdvancedCalculatorViewModel />
+	</Window.DataContext>
 
-    <Window.Resources>
-        <Style x:Key="BaseButtonStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Margin" Value="2" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="#D0D0D0" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
+	<Window.Resources>
+		<Style x:Key="BaseButtonStyle" TargetType="Button">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="BorderBrush" Value="#D0D0D0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}"
                                 CornerRadius="6"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Center"
+							<ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 
-        <Style x:Key="NumberButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-            <Setter Property="Background" Value="#F8F8F8" />
-            <Setter Property="Foreground" Value="Black" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E8E8E8" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+		<Style x:Key="NumberButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+			<Setter Property="Background" Value="#F8F8F8" />
+			<Setter Property="Foreground" Value="Black" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#E8E8E8" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 
-        <Style x:Key="OperatorButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-            <Setter Property="Background" Value="#F0F0F0" />
-            <Setter Property="Foreground" Value="Black" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E0E0E0" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+		<Style x:Key="OperatorButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+			<Setter Property="Background" Value="#F0F0F0" />
+			<Setter Property="Foreground" Value="Black" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#E0E0E0" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 
-        <Style x:Key="FunctionButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-            <Setter Property="Background" Value="#E8F4FD" />
-            <Setter Property="Foreground" Value="#2E7D32" />
-            <Setter Property="FontSize" Value="12" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#D1E7DD" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+		<Style x:Key="FunctionButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+			<Setter Property="Background" Value="#E8F4FD" />
+			<Setter Property="Foreground" Value="#2E7D32" />
+			<Setter Property="FontSize" Value="12" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#D1E7DD" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 
-        <Style x:Key="EqualsButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
-            <Setter Property="Background" Value="#4A90E2" />
-            <Setter Property="Foreground" Value="White" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#357ABD" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
+		<Style x:Key="EqualsButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+			<Setter Property="Background" Value="#4A90E2" />
+			<Setter Property="Foreground" Value="White" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#357ABD" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="70" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+	<Grid Margin="15">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="70" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 
-        <!-- Header -->
-        <TextBlock Grid.Row="0" Text="Advanced Calculator" 
+		<!-- Header -->
+		<TextBlock Grid.Row="0" Text="Advanced Calculator" 
                    FontSize="18" FontWeight="SemiBold" 
                    HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
-        <!-- Display -->
-        <Border Grid.Row="1"
+		<!-- Display -->
+		<Border Grid.Row="1"
                 Background="#2C2C2C"
                 CornerRadius="8"
                 Margin="0,0,0,15">
-            <TextBox Text="{Binding Display, Mode=OneWay}"
+			<TextBox Text="{Binding Display, Mode=OneWay}"
                      FontSize="28"
                      FontWeight="Normal"
                      Foreground="White"
@@ -106,72 +106,72 @@
                      VerticalAlignment="Center"
                      HorizontalAlignment="Stretch"
                      Padding="15,0" />
-        </Border>
+		</Border>
 
-        <!-- Buttons -->
-        <UniformGrid Grid.Row="2" Rows="8" Columns="5">
-            <!-- Row 1: Advanced Functions -->
-            <Button Content="Round" Command="{Binding RoundCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="Floor" Command="{Binding FloorCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="Ceil" Command="{Binding CeilCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="Abs" Command="{Binding AbsCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="Sign" Command="{Binding SignCommand}" Style="{StaticResource FunctionButtonStyle}" />
+		<!-- Buttons -->
+		<UniformGrid Grid.Row="2" Rows="9" Columns="5">
+			<!-- Row 1: Advanced Functions -->
+			<Button Content="Round" Command="{Binding RoundCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="Floor" Command="{Binding FloorCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="Ceil" Command="{Binding CeilCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="Abs" Command="{Binding AbsCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="Sign" Command="{Binding SignCommand}" Style="{StaticResource FunctionButtonStyle}" />
 
-            <!-- Row 2: Trigonometric Functions -->
-            <Button Content="sin" Command="{Binding SinCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="cos" Command="{Binding CosCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="tan" Command="{Binding TanCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="asin" Command="{Binding AsinCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="acos" Command="{Binding AcosCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<!-- Row 2: Trigonometric Functions -->
+			<Button Content="sin" Command="{Binding SinCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="cos" Command="{Binding CosCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="tan" Command="{Binding TanCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="asin" Command="{Binding AsinCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="acos" Command="{Binding AcosCommand}" Style="{StaticResource FunctionButtonStyle}" />
 
-            <!-- Row 3: More Functions -->
-            <Button Content="atan" Command="{Binding AtanCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="log" Command="{Binding LogCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="ln" Command="{Binding LnCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="exp" Command="{Binding ExpCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="pow" Command="{Binding PowCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<!-- Row 3: More Functions -->
+			<Button Content="atan" Command="{Binding AtanCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="log" Command="{Binding LogCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="ln" Command="{Binding LnCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="exp" Command="{Binding ExpCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="pow" Command="{Binding PowCommand}" Style="{StaticResource FunctionButtonStyle}" />
 
-            <!-- Row 4: Constants and Clear -->
-            <Button Content="π" Command="{Binding PiCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="e" Command="{Binding ECommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="CE" Command="{Binding ClearCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="C" Command="{Binding ClearAllCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="⌫" Command="{Binding BackspaceCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<!-- Row 4: Constants and Clear -->
+			<Button Content="π" Command="{Binding PiCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="e" Command="{Binding ECommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="CE" Command="{Binding ClearCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="C" Command="{Binding ClearAllCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="⌫" Command="{Binding BackspaceCommand}" Style="{StaticResource FunctionButtonStyle}" />
 
-            <!-- Row 5: Operators -->
-            <Button Content="(" Command="{Binding LeftParenCommand}" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content=")" Command="{Binding RightParenCommand}" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="%" Command="{Binding PercentCommand}" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="√" Command="{Binding SqrtCommand}" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="÷" Command="{Binding OperatorCommand}" CommandParameter="/" Style="{StaticResource OperatorButtonStyle}" />
+			<!-- Row 5: Operators -->
+			<Button Content="(" Command="{Binding LeftParenCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content=")" Command="{Binding RightParenCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="%" Command="{Binding PercentCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="√" Command="{Binding SqrtCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="÷" Command="{Binding OperatorCommand}" CommandParameter="/" Style="{StaticResource OperatorButtonStyle}" />
 
-            <!-- Row 6: Numbers -->
-            <Button Content="7" Command="{Binding NumberCommand}" CommandParameter="7" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="8" Command="{Binding NumberCommand}" CommandParameter="8" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="9" Command="{Binding NumberCommand}" CommandParameter="9" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="×" Command="{Binding OperatorCommand}" CommandParameter="*" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="x²" Command="{Binding SquareCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<!-- Row 6: Numbers -->
+			<Button Content="7" Command="{Binding NumberCommand}" CommandParameter="7" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="8" Command="{Binding NumberCommand}" CommandParameter="8" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="9" Command="{Binding NumberCommand}" CommandParameter="9" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="×" Command="{Binding OperatorCommand}" CommandParameter="*" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="x²" Command="{Binding SquareCommand}" Style="{StaticResource OperatorButtonStyle}" />
 
-            <!-- Row 7: Numbers -->
-            <Button Content="4" Command="{Binding NumberCommand}" CommandParameter="4" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="5" Command="{Binding NumberCommand}" CommandParameter="5" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="6" Command="{Binding NumberCommand}" CommandParameter="6" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="−" Command="{Binding OperatorCommand}" CommandParameter="-" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="1/x" Command="{Binding ReciprocalCommand}" Style="{StaticResource OperatorButtonStyle}" />
+			<!-- Row 7: Numbers -->
+			<Button Content="4" Command="{Binding NumberCommand}" CommandParameter="4" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="5" Command="{Binding NumberCommand}" CommandParameter="5" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="6" Command="{Binding NumberCommand}" CommandParameter="6" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="−" Command="{Binding OperatorCommand}" CommandParameter="-" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="1/x" Command="{Binding ReciprocalCommand}" Style="{StaticResource OperatorButtonStyle}" />
 
-            <!-- Row 8: Numbers and Equals -->
-            <Button Content="1" Command="{Binding NumberCommand}" CommandParameter="1" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="2" Command="{Binding NumberCommand}" CommandParameter="2" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="3" Command="{Binding NumberCommand}" CommandParameter="3" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="+" Command="{Binding OperatorCommand}" CommandParameter="+" Style="{StaticResource OperatorButtonStyle}" />
-            <Button Content="=" Command="{Binding EqualsCommand}" Style="{StaticResource EqualsButtonStyle}" />
+			<!-- Row 8: Numbers and Equals -->
+			<Button Content="1" Command="{Binding NumberCommand}" CommandParameter="1" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="2" Command="{Binding NumberCommand}" CommandParameter="2" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="3" Command="{Binding NumberCommand}" CommandParameter="3" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="+" Command="{Binding OperatorCommand}" CommandParameter="+" Style="{StaticResource OperatorButtonStyle}" />
+			<Button Content="=" Command="{Binding EqualsCommand}" Style="{StaticResource EqualsButtonStyle}" />
 
-            <!-- Row 9: Bottom row -->
-            <Button Content="+/-" Command="{Binding ToggleSignCommand}" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="0" Command="{Binding NumberCommand}" CommandParameter="0" Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="." Command="{Binding NumberCommand}" CommandParameter="." Style="{StaticResource NumberButtonStyle}" />
-            <Button Content="Rad/Deg" Command="{Binding ToggleAngleModeCommand}" Style="{StaticResource FunctionButtonStyle}" />
-            <Button Content="Close" Click="CloseButton_Click" Style="{StaticResource FunctionButtonStyle}" />
-        </UniformGrid>
-    </Grid>
+			<!-- Row 9: Bottom row -->
+			<Button Content="+/-" Command="{Binding ToggleSignCommand}" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="0" Command="{Binding NumberCommand}" CommandParameter="0" Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="." Command="{Binding NumberCommand}" CommandParameter="." Style="{StaticResource NumberButtonStyle}" />
+			<Button Content="Rad/Deg" Command="{Binding ToggleAngleModeCommand}" Style="{StaticResource FunctionButtonStyle}" />
+			<Button Content="Close" Click="CloseButton_Click" Style="{StaticResource FunctionButtonStyle}" />
+		</UniformGrid>
+	</Grid>
 </Window>

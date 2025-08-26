@@ -1,7 +1,7 @@
 <Window x:Class="Calculator.UI.Views.HistoryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Calculation History" Height="400" Width="350"
+        Title="Calculation History" Height="417" Width="390"
         ResizeMode="CanResize" WindowStartupLocation="CenterOwner"
         Background="White" MinHeight="300" MinWidth="300">
 
