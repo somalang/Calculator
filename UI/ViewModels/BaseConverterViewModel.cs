@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Text.RegularExpressions; // 파일 상단에 추가
 
 namespace Calculator.UI.ViewModels
 {
@@ -204,7 +205,7 @@ namespace Calculator.UI.ViewModels
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
-            ClearHistoryCommand = new RelayCommand(_ => historyProvider.Clear());
+            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
         }
 
         private void OpenMenu(object? parameter)
@@ -265,9 +266,6 @@ namespace Calculator.UI.ViewModels
         {
             string result = $"BIN: {BinaryOutput}\nOCT: {OctalOutput}\nDEC: {DecimalOutput}\nHEX: {HexOutput}";
             Clipboard.SetText(result);
-
-            // Add copy action to history
-            historyProvider.Add($"Copy: {GetCurrentBaseString()}{InputValue}", decimalValue);
         }
 
         private void ExecutePaste(object? parameter)
@@ -343,6 +341,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteShowHistory(object? parameter)
         {
+            // 이미 열려있는 히스토리 창이 있으면 활성화
             if (historyWindow != null)
             {
                 historyWindow.Activate();
@@ -350,22 +349,37 @@ namespace Calculator.UI.ViewModels
                 return;
             }
 
-            // HistoryViewModel 생성 후 DataContext에 연결
-            var historyViewModel = new HistoryViewModel(
-                historyProvider,
-                expression =>
-                {
-                    inputValue = expression;
-                    Display = expression;
-                    //isResultDisplayed = false;
-                });
-           
-            historyWindow.DataContext = historyViewModel; // 중요: ViewModel 바인딩
-            historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.Closed += (s, e) => historyWindow = null;
-            historyWindow.Show();
-        }
+            try
+            {
+                // HistoryViewModel 생성 시 선택 시 호출할 액션 전달
+                var historyViewModel = new HistoryViewModel(
+                    historyProvider,
+                    expression =>
+                    {
+                        // "BIN: 1010 => ..." 형태에서 "1010" 부분만 추출
+                        var match = Regex.Match(expression, @"^(BIN|OCT|DEC|HEX): (.+?) =>");
+                        if (match.Success)
+                        {
+                            string inputValue = match.Groups[2].Value.Trim();
+                            InputValue = inputValue;
+                            Display = $"{GetCurrentBaseString()}{inputValue}";
+                        }
+                    });
 
+                // HistoryWindow 생성 및 연결
+                historyWindow = new HistoryWindow();
+                historyWindow.DataContext = historyViewModel;
+                historyWindow.Owner = Application.Current.MainWindow;
+                historyWindow.Closed += (s, e) => historyWindow = null;
+                historyWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"히스토리 창을 열 수 없습니다: {ex.Message}", "오류",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                historyWindow = null;
+            }
+        }
 
 
         private void ExecuteClearHistory(object? parameter)
@@ -378,7 +392,7 @@ namespace Calculator.UI.ViewModels
         private void AddConversionToHistory()
         {
             string baseString = GetCurrentBaseString();
-            string expression = $"{baseString}{InputValue} = DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
+            string expression = $"{baseString}{InputValue} => DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
 
             // HistoryViewModel을 거치지 않고 historyProvider에 추가
             historyProvider.Add(expression, decimalValue);

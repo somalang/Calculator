@@ -17,13 +17,14 @@ namespace Calculator.UI.ViewModels
         private long result = 0;
         private string operandAInput = "0";
         private string operandBInput = "0";
+        private bool isOperandAFocused = false;
+        private bool isOperandBFocused = false;
         private HistoryWindow? historyWindow;
 
         private readonly IHistoryProvider historyProvider;
 
         // 외부에서 History 참조 가능
         public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
-
 
         public string OperandAInput
         {
@@ -49,15 +50,35 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        // Binary representations
-        public string OperandABinary => Convert.ToString(operandA, 2).PadLeft(32, '0');
-        public string OperandBBinary => Convert.ToString(operandB, 2).PadLeft(32, '0');
-        public string ResultBinary => Convert.ToString(result, 2).PadLeft(32, '0');
+        public bool IsOperandAFocused
+        {
+            get => isOperandAFocused;
+            set
+            {
+                isOperandAFocused = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsOperandBFocused
+        {
+            get => isOperandBFocused;
+            set
+            {
+                isOperandBFocused = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // Binary representations (16비트로 단축)
+        public string OperandABinary => GetBinaryString(operandA);
+        public string OperandBBinary => GetBinaryString(operandB);
+        public string ResultBinary => GetBinaryString(result);
 
         // Hex representations
-        public string OperandAHex => operandA.ToString("X8");
-        public string OperandBHex => operandB.ToString("X8");
-        public string ResultHex => result.ToString("X8");
+        public string OperandAHex => operandA.ToString("X4");
+        public string OperandBHex => operandB.ToString("X4");
+        public string ResultHex => result.ToString("X4");
 
         // Decimal representations
         public string OperandADecimal => operandA.ToString();
@@ -110,6 +131,55 @@ namespace Calculator.UI.ViewModels
             SwapCommand = new RelayCommand(ExecuteSwap);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
+        }
+
+        private string GetBinaryString(long value)
+        {
+            // 값에 따라 적절한 길이로 표시
+            if (value == 0) return "0";
+
+            string binary = Convert.ToString(value, 2);
+
+            // 8비트 단위로 그룹화하되, 최소 8비트, 최대 16비트
+            int targetLength = binary.Length <= 8 ? 8 : 16;
+            return binary.PadLeft(targetLength, '0');
+        }
+
+        // Focus 처리 메서드들 (코드비하인드에서 호출용)
+        public void HandleOperandAGotFocus()
+        {
+            IsOperandAFocused = true;
+            if (operandAInput == "0")
+            {
+                OperandAInput = "";
+            }
+        }
+
+        public void HandleOperandALostFocus()
+        {
+            IsOperandAFocused = false;
+            if (string.IsNullOrWhiteSpace(operandAInput))
+            {
+                OperandAInput = "0";
+            }
+        }
+
+        public void HandleOperandBGotFocus()
+        {
+            IsOperandBFocused = true;
+            if (operandBInput == "0")
+            {
+                OperandBInput = "";
+            }
+        }
+
+        public void HandleOperandBLostFocus()
+        {
+            IsOperandBFocused = false;
+            if (string.IsNullOrWhiteSpace(operandBInput))
+            {
+                OperandBInput = "0";
+            }
         }
 
         private void ExecuteAnd(object? parameter)
