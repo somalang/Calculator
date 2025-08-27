@@ -4,8 +4,8 @@
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
 
         Title="Bit Operations Calculator"
-        Height="647"
-        Width="623"
+        Height="728"
+        Width="734"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         MinHeight="500"
@@ -192,7 +192,7 @@
         </GroupBox>
 
         <!-- Operations Section -->
-        <GroupBox Grid.Row="3" Header="Operations" Padding="10" Margin="0,0,0,10">
+        <GroupBox Grid.Row="3" Header="Operations" Padding="10" Margin="0,67,0,10">
             <UniformGrid Rows="2" Columns="4">
                 <Button Content="AND (A &amp; B)" Command="{Binding AndCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />

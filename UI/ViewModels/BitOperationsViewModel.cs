@@ -187,7 +187,7 @@ namespace Calculator.UI.ViewModels
             result = operandA & operandB;
             CurrentOperation = "AND";
             UpdateResultOutputs();
-            historyProvider.Add($"{operandA} AND {operandB} = {result}", result);
+            historyProvider.Add($"{operandA} & {operandB} = {result}", result);
         }
 
         private void ExecuteOr(object? parameter)
@@ -195,7 +195,7 @@ namespace Calculator.UI.ViewModels
             result = operandA | operandB;
             CurrentOperation = "OR";
             UpdateResultOutputs();
-            historyProvider.Add($"{operandA} OR {operandB} = {result}", result);
+            historyProvider.Add($"{operandA} | {operandB} = {result}", result);
         }
 
         private void ExecuteXor(object? parameter)
@@ -203,7 +203,7 @@ namespace Calculator.UI.ViewModels
             result = operandA ^ operandB;
             CurrentOperation = "XOR";
             UpdateResultOutputs();
-            historyProvider.Add($"{operandA} XOR {operandB} = {result}", result);
+            historyProvider.Add($"{operandA} ^ {operandB} = {result}", result);
         }
 
         private void ExecuteNotA(object? parameter)
@@ -211,7 +211,7 @@ namespace Calculator.UI.ViewModels
             result = ~operandA;
             CurrentOperation = "NOT A";
             UpdateResultOutputs();
-            historyProvider.Add($"NOT {operandA} = {result}", result);
+            historyProvider.Add($"NOT{operandA} = {result}", result);
         }
 
         private void ExecuteNotB(object? parameter)
@@ -219,7 +219,7 @@ namespace Calculator.UI.ViewModels
             result = ~operandB;
             CurrentOperation = "NOT B";
             UpdateResultOutputs();
-            historyProvider.Add($"NOT {operandB} = {result}", result);
+            historyProvider.Add($"NOT{operandB} = {result}", result);
         }
 
         private void ExecuteLeftShift(object? parameter)
@@ -359,15 +359,50 @@ namespace Calculator.UI.ViewModels
             if (historyWindow != null)
             {
                 historyWindow.Activate();
-                historyWindow.Focus();
                 return;
             }
 
-            historyWindow = new HistoryWindow(this.historyProvider);
-            historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.Closed += (s, e) => historyWindow = null;
+            var historyViewModel = new HistoryViewModel(historyProvider, ParseAndSetOperands);
+            historyWindow = new HistoryWindow { DataContext = historyViewModel };
             historyWindow.Show();
         }
+
+        private void ParseAndSetOperands(string expression)
+        {
+            // 숫자 추출
+            var match = System.Text.RegularExpressions.Regex.Match(expression, @"-?\d+");
+            if (match.Success)
+            {
+                OperandAInput = match.Value;
+            }
+            else
+            {
+                OperandAInput = "0";
+            }
+
+            // NOT 연산이면 B는 0으로 초기화
+            if (expression.StartsWith("~") || expression.StartsWith("NOT"))
+                OperandBInput = "0";
+            else
+            {
+                // 이항 연산 처리
+                var numbers = System.Text.RegularExpressions.Regex.Matches(expression, @"-?\d+")
+                                  .Cast<System.Text.RegularExpressions.Match>()
+                                  .Select(m => m.Value)
+                                  .ToArray();
+                if (numbers.Length >= 2)
+                {
+                    OperandAInput = numbers[0];
+                    OperandBInput = numbers[1];
+                }
+                else if (numbers.Length == 1)
+                {
+                    OperandAInput = numbers[0];
+                    OperandBInput = "0";
+                }
+            }
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
