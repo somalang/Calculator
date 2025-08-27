@@ -119,7 +119,7 @@
             Command="{Binding ClearHistoryCommand}"
             Style="{StaticResource ButtonStyle}"/>
             <Button Content="Close" 
-            Click="CloseButton_Click"
+            Command="{Binding CloseCommand}"
             Style="{StaticResource ButtonStyle}"/>
         </StackPanel>
 

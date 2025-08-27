@@ -5,18 +5,17 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Linq;
 
 namespace Calculator.UI.ViewModels
 {
     public class HistoryViewModel : INotifyPropertyChanged
     {
-        private readonly CalculatorViewModel calculatorViewModel;
-        private readonly BitOperationsViewModel? bitViewModel;
-        private readonly Window window;
+        private readonly IHistoryProvider historyProvider;
         private HistoryItem? selectedHistoryItem;
+        private readonly Action<string>? setCalculatorInput; // 추가: 선택한 식 전달용
 
-        // CalculatorViewModel의 HistoryItems를 직접 참조
-        public ObservableCollection<HistoryItem> HistoryItems => calculatorViewModel.HistoryItems;
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         public HistoryItem? SelectedHistoryItem
         {
@@ -31,33 +30,36 @@ namespace Calculator.UI.ViewModels
         public ICommand UseSelectedCommand { get; }
         public ICommand DeleteSelectedCommand { get; }
         public ICommand ClearHistoryCommand { get; }
+        public ICommand CloseCommand { get; }
 
-        public HistoryViewModel(CalculatorViewModel calculatorViewModel, Window window)
+        // 생성자에서 Action 전달
+        public HistoryViewModel(IHistoryProvider historyProvider, Action<string>? setCalculatorInput = null)
         {
-            this.calculatorViewModel = calculatorViewModel;
-            this.window = window;
+            this.historyProvider = historyProvider;
+            this.setCalculatorInput = setCalculatorInput;
 
             UseSelectedCommand = new RelayCommand(ExecuteUseSelected, CanUseSelected);
             DeleteSelectedCommand = new RelayCommand(ExecuteDeleteSelected, CanUseSelected);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
+            CloseCommand = new RelayCommand(ExecuteClose);
         }
 
         private bool CanUseSelected(object? parameter) => SelectedHistoryItem != null;
 
         private void ExecuteUseSelected(object? parameter)
         {
-            if (SelectedHistoryItem != null)
+            if (SelectedHistoryItem != null && setCalculatorInput != null)
             {
-                calculatorViewModel.CurrentInput = SelectedHistoryItem!.Expression;
-                calculatorViewModel.Display = SelectedHistoryItem!.Expression;
+                setCalculatorInput(SelectedHistoryItem.Expression);
             }
         }
+
 
         private void ExecuteDeleteSelected(object? parameter)
         {
             if (SelectedHistoryItem != null)
             {
-                calculatorViewModel.History.Remove(SelectedHistoryItem);
+                historyProvider.Remove(SelectedHistoryItem);
             }
         }
 
@@ -71,15 +73,20 @@ namespace Calculator.UI.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-                calculatorViewModel.History.Clear();
+                historyProvider.Clear();
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void ExecuteClose(object? parameter)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var window = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+            window?.Close();
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

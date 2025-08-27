@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="UI/Views/MenuWindow.xaml">
     <Application.Resources>
-        <Style TargetType="Window">
-            <Setter Property="FontFamily" Value="Segoe UI" />
-        </Style>
+        <ResourceDictionary>
+            <!-- 전역 스타일만 유지 -->
+            <Style TargetType="Window">
+                <Setter Property="FontFamily" Value="Segoe UI" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

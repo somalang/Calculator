@@ -4,7 +4,7 @@ using Calculator.Core.Models;
 
 namespace Calculator.Core.Services
 {
-    public class HistoryService
+    public class HistoryService : IHistoryProvider
     {
         public ObservableCollection<HistoryItem> Items { get; }
 

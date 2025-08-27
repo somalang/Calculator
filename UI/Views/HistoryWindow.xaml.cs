@@ -1,19 +1,22 @@
-﻿using System.Windows;
+﻿using Calculator.Core.Services;
 using Calculator.UI.ViewModels;
+using System.Windows;
 
 namespace Calculator.UI.Views
 {
     public partial class HistoryWindow : Window
     {
-        public HistoryWindow(CalculatorViewModel calculatorViewModel)
+        public HistoryWindow()
         {
             InitializeComponent();
-            DataContext = new HistoryViewModel(calculatorViewModel, this);
+            // DataContext는 외부에서 설정됩니다.
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        public HistoryWindow(IHistoryProvider provider)
         {
-            this.Close();
+            InitializeComponent();
+            // HistoryViewModel을 생성하여 DataContext로 설정
+            DataContext = new HistoryViewModel(provider);
         }
     }
 }

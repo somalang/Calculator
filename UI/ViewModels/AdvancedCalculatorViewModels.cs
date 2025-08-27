@@ -3,6 +3,7 @@ using Calculator.Core.Models;
 using Calculator.Core.Services;
 using Calculator.UI.Views;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -19,7 +20,12 @@ namespace Calculator.UI.ViewModels
         private bool isResultDisplayed;
         private bool isRadianMode = true;
         private HistoryWindow? historyWindow;
-        private readonly HistoryService historyService;
+
+        // HistoryService 직접 생성하거나 App에서 가져오기
+        private readonly IHistoryProvider historyProvider;
+
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
+
         public string Display
         {
             get => display;
@@ -51,7 +57,7 @@ namespace Calculator.UI.ViewModels
         }
         public ICommand? OpenMenuCommand { get; }
 
-        // Commands
+        // Commands (기존 코드와 동일)
         public ICommand? NumberCommand { get; private set; }
         public ICommand? OperatorCommand { get; private set; }
         public ICommand? EqualsCommand { get; private set; }
@@ -103,11 +109,25 @@ namespace Calculator.UI.ViewModels
             CurrentInput = string.Empty;
             isResultDisplayed = false;
 
-            historyService = new HistoryService();
+            // HistoryService를 App에서 가져오거나 새로 생성
+            historyProvider = App.HistoryService ?? new HistoryService();
 
             InitializeCommands();
             OpenMenuCommand = new RelayCommand(OpenMenu);
+        }
 
+        // 생성자 오버로드 - 의존성 주입을 위해
+        public AdvancedCalculatorViewModel(IHistoryProvider historyProvider)
+        {
+            calculator = new AdvancedCalculator();
+            Display = "0";
+            CurrentInput = string.Empty;
+            isResultDisplayed = false;
+
+            this.historyProvider = historyProvider;
+
+            InitializeCommands();
+            OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 
         private void InitializeCommands()
@@ -154,8 +174,9 @@ namespace Calculator.UI.ViewModels
             // Mode
             ToggleAngleModeCommand = new RelayCommand(ExecuteToggleAngleMode);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
-            ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
+            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
         }
+
         private void OpenMenu(object? parameter)
         {
             if (parameter is Window currentWindow)
@@ -166,6 +187,7 @@ namespace Calculator.UI.ViewModels
                 currentWindow.Close();
             }
         }
+
         private void ExecuteNumber(object? parameter)
         {
             string? number = parameter?.ToString();
@@ -210,6 +232,10 @@ namespace Calculator.UI.ViewModels
                 string expression = CurrentInput;
                 CalcValue result = calculator.Evaluate(expression);
                 Display = result.ToString();
+
+                // Add to history - 여기가 중요!
+                historyProvider.Add(expression, result);
+
                 CurrentInput = Display;
                 isResultDisplayed = true;
             }
@@ -221,6 +247,7 @@ namespace Calculator.UI.ViewModels
             }
         }
 
+        // 나머지 Execute 메서드들은 기존과 동일...
         private void ExecuteClear(object? parameter)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
@@ -254,26 +281,42 @@ namespace Calculator.UI.ViewModels
             Display = string.IsNullOrEmpty(CurrentInput) ? "0" : CurrentInput;
         }
 
-        private void ExecuteSqrt(object? parameter)
+        private void ExecuteShowHistory(object? parameter)
         {
-            ExecuteFunction("sqrt");
+            if (historyWindow != null)
+            {
+                historyWindow.Activate();
+                historyWindow.Focus();
+                return;
+            }
+
+            // HistoryViewModel에 선택 시 입력을 업데이트하는 Action 전달
+            var historyViewModel = new HistoryViewModel(
+                historyProvider,
+                expression =>
+                {
+                    CurrentInput = expression;
+                    Display = expression;
+                    isResultDisplayed = false;
+                });
+
+            historyWindow = new HistoryWindow();
+            historyWindow.DataContext = historyViewModel;
+            historyWindow.Owner = Application.Current.MainWindow;
+            historyWindow.Closed += (s, e) => historyWindow = null;
+            historyWindow.Show();
         }
 
-        private void ExecuteSquare(object? parameter)
+        private void ExecuteClearHistory(object? parameter)
         {
-            ExecuteFunction("sqr");
+            historyProvider.Clear();
         }
 
-        private void ExecuteReciprocal(object? parameter)
-        {
-            ExecuteUnaryOperation(calculator.Reciprocal, "1/");
-        }
-
-        private void ExecutePercent(object? parameter)
-        {
-            ExecuteUnaryOperation(calculator.Percent, "%");
-        }
-
+        // 나머지 함수들은 기존과 동일하므로 생략...
+        private void ExecuteSqrt(object? parameter) => ExecuteFunction("sqrt");
+        private void ExecuteSquare(object? parameter) => ExecuteFunction("sqr");
+        private void ExecuteReciprocal(object? parameter) => ExecuteUnaryOperation(calculator.Reciprocal, "1/");
+        private void ExecutePercent(object? parameter) => ExecuteUnaryOperation(calculator.Percent, "%");
         private void ExecuteLeftParen(object? parameter)
         {
             if (isResultDisplayed)
@@ -281,15 +324,12 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-
             CurrentInput += "(";
             Display = CurrentInput;
         }
-
         private void ExecuteRightParen(object? parameter)
         {
             if (isResultDisplayed || string.IsNullOrEmpty(CurrentInput)) return;
-
             CurrentInput += ")";
             Display = CurrentInput;
         }
@@ -313,86 +353,25 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        // Rounding functions
-        private void ExecuteRound(object? parameter)
-        {
-            ExecuteFunction("round");
-        }
-
-        private void ExecuteFloor(object? parameter)
-        {
-            ExecuteFunction("floor");
-        }
-
-        private void ExecuteCeil(object? parameter)
-        {
-            ExecuteFunction("ceil");
-        }
-
-        private void ExecuteAbs(object? parameter)
-        {
-            ExecuteFunction("abs");
-        }
-
-        private void ExecuteSign(object? parameter)
-        {
-            ExecuteFunction("sign");
-        }
-
-        // Trigonometric functions
-        private void ExecuteSin(object? parameter)
-        {
-            ExecuteFunction("sin");
-        }
-
-        private void ExecuteCos(object? parameter)
-        {
-            ExecuteFunction("cos");
-        }
-
-        private void ExecuteTan(object? parameter)
-        {
-            ExecuteFunction("tan");
-        }
-
-        private void ExecuteAsin(object? parameter)
-        {
-            ExecuteFunction("asin");
-        }
-
-        private void ExecuteAcos(object? parameter)
-        {
-            ExecuteFunction("acos");
-        }
-
-        private void ExecuteAtan(object? parameter)
-        {
-            ExecuteFunction("atan");
-        }
-
-        // Logarithmic functions
-        private void ExecuteLog(object? parameter)
-        {
-            ExecuteFunction("log");
-        }
-
-        private void ExecuteLn(object? parameter)
-        {
-            ExecuteFunction("ln");
-        }
-
-        private void ExecuteExp(object? parameter)
-        {
-            ExecuteFunction("exp");
-        }
+        // Function executers
+        private void ExecuteRound(object? parameter) => ExecuteFunction("round");
+        private void ExecuteFloor(object? parameter) => ExecuteFunction("floor");
+        private void ExecuteCeil(object? parameter) => ExecuteFunction("ceil");
+        private void ExecuteAbs(object? parameter) => ExecuteFunction("abs");
+        private void ExecuteSign(object? parameter) => ExecuteFunction("sign");
+        private void ExecuteSin(object? parameter) => ExecuteFunction("sin");
+        private void ExecuteCos(object? parameter) => ExecuteFunction("cos");
+        private void ExecuteTan(object? parameter) => ExecuteFunction("tan");
+        private void ExecuteAsin(object? parameter) => ExecuteFunction("asin");
+        private void ExecuteAcos(object? parameter) => ExecuteFunction("acos");
+        private void ExecuteAtan(object? parameter) => ExecuteFunction("atan");
+        private void ExecuteLog(object? parameter) => ExecuteFunction("log");
+        private void ExecuteLn(object? parameter) => ExecuteFunction("ln");
+        private void ExecuteExp(object? parameter) => ExecuteFunction("exp");
 
         private void ExecutePow(object? parameter)
         {
-            if (isResultDisplayed)
-            {
-                isResultDisplayed = false;
-            }
-
+            if (isResultDisplayed) isResultDisplayed = false;
             if (!string.IsNullOrEmpty(CurrentInput))
             {
                 CurrentInput += " ^ ";
@@ -400,7 +379,6 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        // Constants
         private void ExecutePi(object? parameter)
         {
             if (isResultDisplayed)
@@ -408,7 +386,6 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-
             CurrentInput += Math.PI.ToString();
             Display = CurrentInput;
         }
@@ -420,12 +397,10 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-
             CurrentInput += Math.E.ToString();
             Display = CurrentInput;
         }
 
-        // Mode toggle
         private void ExecuteToggleAngleMode(object? parameter)
         {
             IsRadianMode = !IsRadianMode;
@@ -435,7 +410,6 @@ namespace Calculator.UI.ViewModels
         private void ExecuteFunction(string functionName)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
-
             CurrentInput = $"{functionName}({CurrentInput})";
             Display = CurrentInput;
         }
@@ -450,6 +424,10 @@ namespace Calculator.UI.ViewModels
                 CalcValue value = calculator.Evaluate(expression);
                 CalcValue result = operation(value);
                 Display = result.ToString();
+
+                // Add to history
+                historyProvider.Add($"{operatorSymbol}({expression})", result);
+
                 CurrentInput = Display;
                 isResultDisplayed = true;
             }
@@ -460,26 +438,7 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
             }
         }
-        private void ExecuteClearHistory(object? parameter)
-        {
-            historyService.Clear();
-        }
-        private void ExecuteShowHistory(object? parameter)
-        {
-            // 이미 열려있는 창이 있으면 앞으로 가져오기
-            if (historyWindow != null)
-            {
-                historyWindow.Activate();
-                historyWindow.Focus();
-                return;
-            }
 
-            // 새 히스토리 창 생성 (모달리스)
-            historyWindow = new HistoryWindow(this);
-            historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
-            historyWindow.Show(); // ShowDialog() 대신 Show() 사용
-        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
