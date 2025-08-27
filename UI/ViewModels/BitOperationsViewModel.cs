@@ -110,7 +110,9 @@ namespace Calculator.UI.ViewModels
         public ICommand? SwapCommand { get; private set; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
-
+        public ICommand? NumberCommand { get; private set; }
+        public ICommand? BackspaceCommand { get; private set; }
+        public ICommand? ClearEntryCommand { get; private set; }
         public BitOperationsViewModel()
         {
             historyProvider = App.HistoryService ?? new HistoryService();
@@ -131,6 +133,8 @@ namespace Calculator.UI.ViewModels
             SwapCommand = new RelayCommand(ExecuteSwap);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
+            BackspaceCommand = new RelayCommand(ExecuteBackspace);
+            NumberCommand = new RelayCommand(ExecuteNumber);
         }
 
         private string GetBinaryString(long value)
@@ -181,6 +185,31 @@ namespace Calculator.UI.ViewModels
                 OperandBInput = "0";
             }
         }
+        private void ExecuteNumber(object? parameter)
+        {
+            var digit = parameter?.ToString();
+            if (string.IsNullOrEmpty(digit))
+                return;
+
+            if (IsOperandAFocused)
+            {
+                if (OperandAInput == "0") OperandAInput = "";
+                OperandAInput += digit;
+            }
+            else if (IsOperandBFocused)
+            {
+                if (OperandBInput == "0") OperandBInput = "";
+                OperandBInput += digit;
+            }
+            else
+            {
+                // 아무 데도 포커스가 없으면 기본적으로 A에 입력
+                if (OperandAInput == "0") OperandAInput = "";
+                OperandAInput += digit;
+            }
+        }
+
+
 
         private void ExecuteAnd(object? parameter)
         {
@@ -252,7 +281,23 @@ namespace Calculator.UI.ViewModels
             CurrentOperation = "None";
             UpdateResultOutputs();
         }
-
+        private void ExecuteBackspace(object? parameter)
+        {
+            if (IsOperandAFocused)
+            {
+                if (OperandAInput.Length > 0)
+                    OperandAInput = OperandAInput[..^1];
+                if (string.IsNullOrEmpty(OperandAInput))
+                    OperandAInput = "0";
+            }
+            else if (IsOperandBFocused)
+            {
+                if (OperandBInput.Length > 0)
+                    OperandBInput = OperandBInput[..^1];
+                if (string.IsNullOrEmpty(OperandBInput))
+                    OperandBInput = "0";
+            }
+        }
         private void ExecuteSwap(object? parameter)
         {
             (OperandAInput, OperandBInput) = (OperandBInput, OperandAInput);
