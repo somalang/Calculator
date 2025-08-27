@@ -1,11 +1,11 @@
-﻿// Calculator.UI/ViewModels/HistoryViewModel.cs
-using Calculator.Core.Models;
-using Calculator.Core.Services; // 인터페이스 가져오기
+﻿using Calculator.Core.Models;
+using Calculator.Core.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Linq;
 
 namespace Calculator.UI.ViewModels
 {
@@ -13,8 +13,8 @@ namespace Calculator.UI.ViewModels
     {
         private readonly IHistoryProvider historyProvider;
         private HistoryItem? selectedHistoryItem;
+        private readonly Action<string>? setCalculatorInput; // 추가: 선택한 식 전달용
 
-        // 인터페이스가 노출하는 Items 사용
         public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         public HistoryItem? SelectedHistoryItem
@@ -30,24 +30,30 @@ namespace Calculator.UI.ViewModels
         public ICommand UseSelectedCommand { get; }
         public ICommand DeleteSelectedCommand { get; }
         public ICommand ClearHistoryCommand { get; }
+        public ICommand CloseCommand { get; }
 
-        public HistoryViewModel(IHistoryProvider historyProvider)
+        // 생성자에서 Action 전달
+        public HistoryViewModel(IHistoryProvider historyProvider, Action<string>? setCalculatorInput = null)
         {
             this.historyProvider = historyProvider;
+            this.setCalculatorInput = setCalculatorInput;
 
             UseSelectedCommand = new RelayCommand(ExecuteUseSelected, CanUseSelected);
             DeleteSelectedCommand = new RelayCommand(ExecuteDeleteSelected, CanUseSelected);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
+            CloseCommand = new RelayCommand(ExecuteClose);
         }
 
         private bool CanUseSelected(object? parameter) => SelectedHistoryItem != null;
 
         private void ExecuteUseSelected(object? parameter)
         {
-            if (SelectedHistoryItem == null) return;
-
-            // UI와 다른 ViewModel 연동 로직
+            if (SelectedHistoryItem != null && setCalculatorInput != null)
+            {
+                setCalculatorInput(SelectedHistoryItem.Expression);
+            }
         }
+
 
         private void ExecuteDeleteSelected(object? parameter)
         {
@@ -69,6 +75,14 @@ namespace Calculator.UI.ViewModels
             {
                 historyProvider.Clear();
             }
+        }
+
+        private void ExecuteClose(object? parameter)
+        {
+            var window = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+            window?.Close();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

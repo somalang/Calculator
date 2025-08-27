@@ -92,8 +92,8 @@ namespace Calculator.UI.ViewModels
 
         public BitOperationsViewModel()
         {
-            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
-                               ?? throw new ArgumentNullException("HistoryService not found"); InitializeCommands();
+            historyProvider = App.HistoryService ?? new HistoryService();
+            InitializeCommands();
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 

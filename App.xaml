@@ -1,15 +1,13 @@
 ﻿<Application x:Class="Calculator.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:services="clr-namespace:Calculator.Core.Services"
              StartupUri="UI/Views/MenuWindow.xaml">
     <Application.Resources>
-        <!-- 전역 스타일 -->
-        <Style TargetType="Window">
-            <Setter Property="FontFamily" Value="Segoe UI" />
-        </Style>
-
-        <!-- HistoryService를 전역 리소스로 등록 (Key는 ResourceDictionary 안에서만 사용) -->
-        <services:HistoryService x:Key="HistoryService" />
+        <ResourceDictionary>
+            <!-- 전역 스타일만 유지 -->
+            <Style TargetType="Window">
+                <Setter Property="FontFamily" Value="Segoe UI" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

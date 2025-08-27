@@ -1,13 +1,18 @@
 ﻿using Calculator.Core.Services;
 using System.Windows;
 
-public partial class App : Application
+namespace Calculator
 {
-    public static HistoryService? HistoryService { get; private set; }
-
-    protected override void OnStartup(StartupEventArgs e)
+    public partial class App : Application
     {
-        base.OnStartup(e);
-        HistoryService = new HistoryService();
+        public static HistoryService? HistoryService { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // HistoryService 싱글톤 초기화
+            HistoryService = new HistoryService();
+        }
     }
 }

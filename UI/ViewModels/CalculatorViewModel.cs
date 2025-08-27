@@ -83,8 +83,10 @@ namespace Calculator.UI.ViewModels
         public CalculatorViewModel()
         {
             calculator = new StandardCalculator();
-            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
-                   ?? throw new ArgumentNullException("HistoryService not found");
+
+            // App.xaml 리소스 대신 App 정적 프로퍼티 사용
+            historyProvider = App.HistoryService ?? new HistoryService();
+
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;

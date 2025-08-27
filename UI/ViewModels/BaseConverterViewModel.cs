@@ -15,6 +15,8 @@ namespace Calculator.UI.ViewModels
         private string inputValue = "0";
         private int currentBase = 10;
         private long decimalValue = 0;
+        private string display = string.Empty;
+
         private HistoryWindow? historyWindow;
 
         private readonly IHistoryProvider historyProvider;
@@ -31,6 +33,15 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
                 UpdateDecimalValue();
                 UpdateOutputs();
+            }
+        }
+        public string Display
+        {
+            get => display;
+            set
+            {
+                display = value;
+                OnPropertyChanged();
             }
         }
 
@@ -176,8 +187,9 @@ namespace Calculator.UI.ViewModels
 
         public BaseConverterViewModel()
         {
-            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
-                               ?? throw new ArgumentNullException("HistoryService not found"); InitializeCommands();
+            historyProvider = App.HistoryService ?? new HistoryService();
+            InitializeCommands();       // 추가
+
             UpdateDigitAvailability();
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
@@ -205,6 +217,18 @@ namespace Calculator.UI.ViewModels
                 currentWindow.Close();
             }
         }
+        private string GetCurrentBaseString()
+        {
+            return currentBase switch
+            {
+                2 => "BIN: ",
+                8 => "OCT: ",
+                10 => "DEC: ",
+                16 => "HEX: ",
+                _ => ""
+            };
+        }
+
 
         private void ExecuteDigit(object? parameter)
         {
@@ -317,30 +341,6 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-        private void AddConversionToHistory()
-        {
-            string baseString = GetCurrentBaseString();
-            string expression = $"{baseString}{InputValue} = DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
-            historyProvider.Add(expression, decimalValue);
-        }
-
-        private string GetCurrentBaseString()
-        {
-            return currentBase switch
-            {
-                2 => "BIN: ",
-                8 => "OCT: ",
-                10 => "DEC: ",
-                16 => "HEX: ",
-                _ => ""
-            };
-        }
-
-        private void ExecuteClearHistory(object? parameter)
-        {
-            historyProvider.Clear();
-        }
-
         private void ExecuteShowHistory(object? parameter)
         {
             if (historyWindow != null)
@@ -350,11 +350,40 @@ namespace Calculator.UI.ViewModels
                 return;
             }
 
-            historyWindow = new HistoryWindow(historyProvider);
+            // HistoryViewModel 생성 후 DataContext에 연결
+            var historyViewModel = new HistoryViewModel(
+                historyProvider,
+                expression =>
+                {
+                    inputValue = expression;
+                    Display = expression;
+                    //isResultDisplayed = false;
+                });
+           
+            historyWindow.DataContext = historyViewModel; // 중요: ViewModel 바인딩
             historyWindow.Owner = Application.Current.MainWindow;
             historyWindow.Closed += (s, e) => historyWindow = null;
             historyWindow.Show();
         }
+
+
+
+        private void ExecuteClearHistory(object? parameter)
+        {
+            // HistoryViewModel을 거치지 않고 historyProvider 직접 Clear
+            historyProvider.Clear();
+        }
+
+        // Input 변경 시 히스토리 추가
+        private void AddConversionToHistory()
+        {
+            string baseString = GetCurrentBaseString();
+            string expression = $"{baseString}{InputValue} = DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
+
+            // HistoryViewModel을 거치지 않고 historyProvider에 추가
+            historyProvider.Add(expression, decimalValue);
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
