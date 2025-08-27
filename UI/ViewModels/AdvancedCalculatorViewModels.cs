@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class AdvancedCalculatorViewModel : INotifyPropertyChanged, IHistoryProvider
+    public class AdvancedCalculatorViewModel : INotifyPropertyChanged
     {
         private string display = string.Empty;
         private string currentInput = string.Empty;
@@ -20,10 +20,10 @@ namespace Calculator.UI.ViewModels
         private bool isResultDisplayed;
         private bool isRadianMode = true;
         private HistoryWindow? historyWindow;
-        private readonly HistoryService historyService;
+        
+        private readonly IHistoryProvider historyProvider;
 
-        // IHistoryProvider 구현
-        public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         public string Display
         {
@@ -108,8 +108,8 @@ namespace Calculator.UI.ViewModels
             CurrentInput = string.Empty;
             isResultDisplayed = false;
 
-            historyService = new HistoryService();
-
+            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
+                               ?? throw new ArgumentNullException("HistoryService not found");
             InitializeCommands();
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
@@ -218,10 +218,10 @@ namespace Calculator.UI.ViewModels
                 string expression = CurrentInput;
                 CalcValue result = calculator.Evaluate(expression);
                 Display = result.ToString();
-                
+
                 // Add to history
-                historyService.Add(expression, result);
-                
+                historyProvider.Add(expression, result);
+
                 CurrentInput = Display;
                 isResultDisplayed = true;
             }
@@ -462,10 +462,10 @@ namespace Calculator.UI.ViewModels
                 CalcValue value = calculator.Evaluate(expression);
                 CalcValue result = operation(value);
                 Display = result.ToString();
-                
+
                 // Add to history
-                historyService.Add($"{operatorSymbol}({expression})", result);
-                
+                historyProvider.Add($"{operatorSymbol}({expression})", result);
+
                 CurrentInput = Display;
                 isResultDisplayed = true;
             }
@@ -479,7 +479,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteClearHistory(object? parameter)
         {
-            historyService.Clear();
+            historyProvider.Clear();
         }
 
         private void ExecuteShowHistory(object? parameter)
@@ -493,7 +493,7 @@ namespace Calculator.UI.ViewModels
             }
 
             // 새 히스토리 창 생성 (모달리스)
-            historyWindow = new HistoryWindow(this);
+            historyWindow = new HistoryWindow(historyProvider);
             historyWindow.Owner = Application.Current.MainWindow;
             historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
             historyWindow.Show(); // ShowDialog() 대신 Show() 사용

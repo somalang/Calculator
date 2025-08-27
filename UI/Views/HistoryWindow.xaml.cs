@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using Calculator.UI.ViewModels;
+using Calculator.Core.Services;
 
 namespace Calculator.UI.Views
 {
@@ -11,7 +11,7 @@ namespace Calculator.UI.Views
         {
             InitializeComponent();
             historyProvider = provider;
-            DataContext = historyProvider.HistoryItems;
+            DataContext = historyProvider.Items;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

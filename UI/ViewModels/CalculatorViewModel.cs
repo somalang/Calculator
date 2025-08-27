@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class CalculatorViewModel : INotifyPropertyChanged, IHistoryProvider
+    public class CalculatorViewModel : INotifyPropertyChanged
     {
         // 필드
         private string display = string.Empty;
@@ -20,10 +20,10 @@ namespace Calculator.UI.ViewModels
         private readonly BaseCalculator calculator;
         private bool isResultDisplayed;
         private HistoryWindow? historyWindow;
-        private readonly HistoryService historyService;
+        private readonly IHistoryProvider historyProvider;
 
         // IHistoryProvider 구현
-        public HistoryService HistoryService => historyService;
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         // 속성
         public string Display
@@ -48,18 +48,16 @@ namespace Calculator.UI.ViewModels
 
         public void RemoveHistoryItem(HistoryItem item)
         {
-            historyService.Remove(item);
+            historyProvider.Remove(item);
         }
 
         public void ClearHistory()
         {
-            historyService.Clear();
+            historyProvider.Clear();
         }
 
 
         // HistoryService의 Items를 직접 노출
-        public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
-
         // 명령들
         public ICommand? NumberCommand { get; private set; }
         public ICommand? OperatorCommand { get; private set; }
@@ -85,8 +83,8 @@ namespace Calculator.UI.ViewModels
         public CalculatorViewModel()
         {
             calculator = new StandardCalculator();
-            historyService = new HistoryService();
-
+            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
+                   ?? throw new ArgumentNullException("HistoryService not found");
             Display = "0";
             CurrentInput = string.Empty;
             isResultDisplayed = false;
@@ -175,7 +173,7 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
 
                 // 히스토리에 추가
-                historyService.Add(expression, result);
+                historyProvider.Add(expression, result);
             }
             catch (Exception ex)
             {
@@ -248,7 +246,7 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
 
                 // 히스토리에 추가
-                historyService.Add($"1/({expression})", result);
+                historyProvider.Add($"1/({expression})", result);
             }
             catch (Exception ex)
             {
@@ -272,7 +270,7 @@ namespace Calculator.UI.ViewModels
                 isResultDisplayed = true;
 
                 // 히스토리에 추가
-                historyService.Add($"{expression}%", result);
+                historyProvider.Add($"{expression}%", result);
             }
             catch (Exception ex)
             {
@@ -323,7 +321,7 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteClearHistory(object? parameter)
         {
-            historyService.Clear();
+            historyProvider.Clear();
         }
 
         private void ExecuteCopy(object? parameter)
@@ -456,22 +454,14 @@ namespace Calculator.UI.ViewModels
                 return;
             }
 
-            // 새 히스토리 창 생성 (모달리스)
-            historyWindow = new HistoryWindow(this);
+            historyWindow = new HistoryWindow(historyProvider);
             historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
-            historyWindow.Show(); // ShowDialog() 대신 Show() 사용
+            historyWindow.Closed += (s, e) => historyWindow = null;
+            historyWindow.Show();
         }
 
-        // HistoryService 외부 노출 - 하위 호환성을 위해 유지
-        public HistoryService History => historyService;
-
-        // INotifyPropertyChanged 구현
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

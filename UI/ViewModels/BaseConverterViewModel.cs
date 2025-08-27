@@ -10,19 +10,17 @@ using System.Windows.Input;
 
 namespace Calculator.UI.ViewModels
 {
-    public class BaseConverterViewModel : INotifyPropertyChanged, IHistoryProvider
+    public class BaseConverterViewModel : INotifyPropertyChanged
     {
         private string inputValue = "0";
         private int currentBase = 10;
         private long decimalValue = 0;
         private HistoryWindow? historyWindow;
-        private readonly HistoryService historyService;
 
-        // IHistoryProvider 구현
-        public HistoryService HistoryService => historyService;
+        private readonly IHistoryProvider historyProvider;
 
-        // HistoryService의 Items를 직접 노출 (기존 코드와의 호환성)
-        public ObservableCollection<HistoryItem> HistoryItems => historyService.Items;
+        // HistoryItems는 외부의 HistoryService에서 가져옴
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         public string InputValue
         {
@@ -178,10 +176,9 @@ namespace Calculator.UI.ViewModels
 
         public BaseConverterViewModel()
         {
-            historyService = new HistoryService();
-            InitializeCommands();
+            historyProvider = Application.Current.Resources["HistoryService"] as IHistoryProvider
+                               ?? throw new ArgumentNullException("HistoryService not found"); InitializeCommands();
             UpdateDigitAvailability();
-
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
 
@@ -195,8 +192,7 @@ namespace Calculator.UI.ViewModels
             CopyCommand = new RelayCommand(ExecuteCopy);
             PasteCommand = new RelayCommand(ExecutePaste);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
-            ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
-            ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
+            ClearHistoryCommand = new RelayCommand(_ => historyProvider.Clear());
         }
 
         private void OpenMenu(object? parameter)
@@ -247,7 +243,7 @@ namespace Calculator.UI.ViewModels
             Clipboard.SetText(result);
 
             // Add copy action to history
-            historyService.Add($"Copy: {GetCurrentBaseString()}{InputValue}", CalcValue.Create(decimalValue));
+            historyProvider.Add($"Copy: {GetCurrentBaseString()}{InputValue}", decimalValue);
         }
 
         private void ExecutePaste(object? parameter)
@@ -263,7 +259,7 @@ namespace Calculator.UI.ViewModels
                     // Add paste action to history
                     if (InputValue != oldValue)
                     {
-                        historyService.Add($"Paste: {GetCurrentBaseString()}{InputValue}", CalcValue.Create(decimalValue));
+                        historyProvider.Add($"Paste: {GetCurrentBaseString()}{InputValue}", decimalValue);
                     }
                 }
             }
@@ -325,7 +321,7 @@ namespace Calculator.UI.ViewModels
         {
             string baseString = GetCurrentBaseString();
             string expression = $"{baseString}{InputValue} = DEC: {DecimalOutput}, BIN: {BinaryOutput}, OCT: {OctalOutput}, HEX: {HexOutput}";
-            historyService.Add(expression, CalcValue.Create(decimalValue));
+            historyProvider.Add(expression, decimalValue);
         }
 
         private string GetCurrentBaseString()
@@ -342,12 +338,11 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteClearHistory(object? parameter)
         {
-            historyService.Clear();
+            historyProvider.Clear();
         }
 
         private void ExecuteShowHistory(object? parameter)
         {
-            // 이미 열려있는 창이 있으면 앞으로 가져오기
             if (historyWindow != null)
             {
                 historyWindow.Activate();
@@ -355,18 +350,14 @@ namespace Calculator.UI.ViewModels
                 return;
             }
 
-            // 새 히스토리 창 생성 (모달리스)
-            historyWindow = new HistoryWindow(this);
+            historyWindow = new HistoryWindow(historyProvider);
             historyWindow.Owner = Application.Current.MainWindow;
-            historyWindow.Closed += (s, e) => historyWindow = null; // 창이 닫히면 참조 해제
-            historyWindow.Show(); // ShowDialog() 대신 Show() 사용
+            historyWindow.Closed += (s, e) => historyWindow = null;
+            historyWindow.Show();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

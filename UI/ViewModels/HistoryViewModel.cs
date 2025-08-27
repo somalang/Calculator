@@ -1,4 +1,6 @@
-﻿using Calculator.Core.Models;
+﻿// Calculator.UI/ViewModels/HistoryViewModel.cs
+using Calculator.Core.Models;
+using Calculator.Core.Services; // 인터페이스 가져오기
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -10,11 +12,10 @@ namespace Calculator.UI.ViewModels
     public class HistoryViewModel : INotifyPropertyChanged
     {
         private readonly IHistoryProvider historyProvider;
-        private readonly Window window;
         private HistoryItem? selectedHistoryItem;
 
-        // IHistoryProvider의 HistoryItems를 직접 참조
-        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.HistoryItems;
+        // 인터페이스가 노출하는 Items 사용
+        public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         public HistoryItem? SelectedHistoryItem
         {
@@ -30,10 +31,9 @@ namespace Calculator.UI.ViewModels
         public ICommand DeleteSelectedCommand { get; }
         public ICommand ClearHistoryCommand { get; }
 
-        public HistoryViewModel(IHistoryProvider historyProvider, Window window)
+        public HistoryViewModel(IHistoryProvider historyProvider)
         {
             this.historyProvider = historyProvider;
-            this.window = window;
 
             UseSelectedCommand = new RelayCommand(ExecuteUseSelected, CanUseSelected);
             DeleteSelectedCommand = new RelayCommand(ExecuteDeleteSelected, CanUseSelected);
@@ -44,32 +44,16 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteUseSelected(object? parameter)
         {
-            if (SelectedHistoryItem != null)
-            {
-                // IHistoryProvider에서 특정 ViewModel 타입에 따라 처리
-                switch (historyProvider)
-                {
-                    case AdvancedCalculatorViewModel calcVM:
-                        calcVM.CurrentInput = SelectedHistoryItem.Expression;
-                        calcVM.Display = SelectedHistoryItem.Expression;
-                        break;
-                    case BaseConverterViewModel baseVM:
-                        // Base converter의 경우 결과값을 입력으로 설정
-                        baseVM.InputValue = SelectedHistoryItem.Result.ToString();
-                        break;
-                    case BitOperationsViewModel bitVM:
-                        // Bit operations의 경우 결과값을 operand A로 설정
-                        bitVM.OperandAInput = SelectedHistoryItem.Result.ToString();
-                        break;
-                }
-            }
+            if (SelectedHistoryItem == null) return;
+
+            // UI와 다른 ViewModel 연동 로직
         }
 
         private void ExecuteDeleteSelected(object? parameter)
         {
             if (SelectedHistoryItem != null)
             {
-                historyProvider.RemoveHistoryItem(SelectedHistoryItem);
+                historyProvider.Remove(SelectedHistoryItem);
             }
         }
 
@@ -83,15 +67,12 @@ namespace Calculator.UI.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-                historyProvider.ClearHistory();
+                historyProvider.Clear();
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
