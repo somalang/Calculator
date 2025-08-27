@@ -13,3 +13,4 @@ namespace Calculator.Core.Services
         void Clear();
     }
 }
+ 

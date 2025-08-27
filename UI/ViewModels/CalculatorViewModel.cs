@@ -448,7 +448,6 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteShowHistory(object? parameter)
         {
-            // 이미 열려있는 창이 있으면 앞으로 가져오기
             if (historyWindow != null)
             {
                 historyWindow.Activate();
@@ -456,7 +455,18 @@ namespace Calculator.UI.ViewModels
                 return;
             }
 
-            historyWindow = new HistoryWindow(historyProvider);
+            // HistoryViewModel에 선택 시 입력을 업데이트하는 Action 전달
+            var historyViewModel = new HistoryViewModel(
+                historyProvider,
+                expression =>
+                {
+                    CurrentInput = expression;
+                    Display = expression;
+                    isResultDisplayed = false;
+                });
+
+            historyWindow = new HistoryWindow();
+            historyWindow.DataContext = historyViewModel;
             historyWindow.Owner = Application.Current.MainWindow;
             historyWindow.Closed += (s, e) => historyWindow = null;
             historyWindow.Show();
