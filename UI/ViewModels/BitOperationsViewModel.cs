@@ -31,10 +31,17 @@ namespace Calculator.UI.ViewModels
             get => operandAInput;
             set
             {
-                operandAInput = value ?? "0";
-                OnPropertyChanged();
-                UpdateOperandA();
-                UpdateResults();
+                if (IsValidNumericInput(value))
+                {
+                    operandAInput = value ?? ""; // 빈 문자열 허용
+                    OnPropertyChanged();
+                    UpdateOperandA();
+                    UpdateResults();
+                }
+                else
+                {
+                    // 잘못된 입력은 무시 (기존 값 유지)
+                }
             }
         }
 
@@ -43,12 +50,29 @@ namespace Calculator.UI.ViewModels
             get => operandBInput;
             set
             {
-                operandBInput = value ?? "0";
-                OnPropertyChanged();
-                UpdateOperandB();
-                UpdateResults();
+                if (IsValidNumericInput(value))
+                {
+                    operandBInput = value ?? "";
+                    OnPropertyChanged();
+                    UpdateOperandB();
+                    UpdateResults();
+                }
+                else
+                {
+                    // 잘못된 입력은 무시
+                }
             }
         }
+
+        /// <summary>
+        /// 숫자 또는 음수(-)만 허용
+        /// </summary>
+        private bool IsValidNumericInput(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return true; // 빈 입력 허용
+            return System.Text.RegularExpressions.Regex.IsMatch(input, @"^-?\d+$");
+        }
+
 
         public bool IsOperandAFocused
         {
@@ -102,17 +126,24 @@ namespace Calculator.UI.ViewModels
         public ICommand? AndCommand { get; private set; }
         public ICommand? OrCommand { get; private set; }
         public ICommand? XorCommand { get; private set; }
+        public ICommand? NandCommand { get; private set; }  // 추가
+        public ICommand? NorCommand { get; private set; }   // 추가
+        public ICommand? NxorCommand { get; private set; }  // 추가
         public ICommand? NotACommand { get; private set; }
         public ICommand? NotBCommand { get; private set; }
         public ICommand? LeftShiftCommand { get; private set; }
         public ICommand? RightShiftCommand { get; private set; }
         public ICommand? ClearCommand { get; private set; }
+        public ICommand? ClearACommand { get; private set; }  // 추가
+        public ICommand? ClearBCommand { get; private set; }  // 추가
         public ICommand? SwapCommand { get; private set; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
         public ICommand? NumberCommand { get; private set; }
         public ICommand? BackspaceCommand { get; private set; }
         public ICommand? ClearEntryCommand { get; private set; }
+        public ICommand? ToggleSignCommand { get; private set; }  // 추가
+
         public BitOperationsViewModel()
         {
             historyProvider = App.HistoryService ?? new HistoryService();
@@ -125,16 +156,22 @@ namespace Calculator.UI.ViewModels
             AndCommand = new RelayCommand(ExecuteAnd);
             OrCommand = new RelayCommand(ExecuteOr);
             XorCommand = new RelayCommand(ExecuteXor);
+            NandCommand = new RelayCommand(ExecuteNand);  // 추가
+            NorCommand = new RelayCommand(ExecuteNor);    // 추가
+            NxorCommand = new RelayCommand(ExecuteNxor);  // 추가
             NotACommand = new RelayCommand(ExecuteNotA);
             NotBCommand = new RelayCommand(ExecuteNotB);
             LeftShiftCommand = new RelayCommand(ExecuteLeftShift);
             RightShiftCommand = new RelayCommand(ExecuteRightShift);
             ClearCommand = new RelayCommand(ExecuteClear);
+            ClearACommand = new RelayCommand(ExecuteClearA);  // 추가
+            ClearBCommand = new RelayCommand(ExecuteClearB);  // 추가
             SwapCommand = new RelayCommand(ExecuteSwap);
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
             BackspaceCommand = new RelayCommand(ExecuteBackspace);
             NumberCommand = new RelayCommand(ExecuteNumber);
+            ToggleSignCommand = new RelayCommand(ExecuteToggleSign);  // 추가
         }
 
         private string GetBinaryString(long value)
@@ -185,6 +222,7 @@ namespace Calculator.UI.ViewModels
                 OperandBInput = "0";
             }
         }
+
         private void ExecuteNumber(object? parameter)
         {
             var digit = parameter?.ToString();
@@ -209,7 +247,31 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-
+        private void ExecuteToggleSign(object? parameter)
+        {
+            if (IsOperandAFocused)
+            {
+                if (long.TryParse(OperandAInput, out long value))
+                {
+                    OperandAInput = (-value).ToString();
+                }
+            }
+            else if (IsOperandBFocused)
+            {
+                if (long.TryParse(OperandBInput, out long value))
+                {
+                    OperandBInput = (-value).ToString();
+                }
+            }
+            else
+            {
+                // 기본적으로 A 값 변경
+                if (long.TryParse(OperandAInput, out long value))
+                {
+                    OperandAInput = (-value).ToString();
+                }
+            }
+        }
 
         private void ExecuteAnd(object? parameter)
         {
@@ -233,6 +295,31 @@ namespace Calculator.UI.ViewModels
             CurrentOperation = "XOR";
             UpdateResultOutputs();
             historyProvider.Add($"{operandA} ^ {operandB} = {result}", result);
+        }
+
+        // 새로 추가된 연산들
+        private void ExecuteNand(object? parameter)
+        {
+            result = ~(operandA & operandB);
+            CurrentOperation = "NAND";
+            UpdateResultOutputs();
+            historyProvider.Add($"~({operandA} & {operandB}) = {result}", result);
+        }
+
+        private void ExecuteNor(object? parameter)
+        {
+            result = ~(operandA | operandB);
+            CurrentOperation = "NOR";
+            UpdateResultOutputs();
+            historyProvider.Add($"~({operandA} | {operandB}) = {result}", result);
+        }
+
+        private void ExecuteNxor(object? parameter)
+        {
+            result = ~(operandA ^ operandB);
+            CurrentOperation = "NXOR";
+            UpdateResultOutputs();
+            historyProvider.Add($"~({operandA} ^ {operandB}) = {result}", result);
         }
 
         private void ExecuteNotA(object? parameter)
@@ -281,6 +368,22 @@ namespace Calculator.UI.ViewModels
             CurrentOperation = "None";
             UpdateResultOutputs();
         }
+
+        // 새로 추가된 Clear 버튼들
+        private void ExecuteClearA(object? parameter)
+        {
+            OperandAInput = "0";
+            IsOperandAFocused = true;  // 포커스 B로 이동
+            historyProvider.Add("Cleared Operand A", 0);
+        }
+
+        private void ExecuteClearB(object? parameter)
+        {
+            OperandBInput = "0";
+            IsOperandBFocused = true;  // 포커스 B로 이동
+            historyProvider.Add("Cleared Operand B", 0);
+        }
+
         private void ExecuteBackspace(object? parameter)
         {
             if (IsOperandAFocused)
@@ -298,6 +401,7 @@ namespace Calculator.UI.ViewModels
                     OperandBInput = "0";
             }
         }
+
         private void ExecuteSwap(object? parameter)
         {
             (OperandAInput, OperandBInput) = (OperandBInput, OperandAInput);
@@ -317,49 +421,20 @@ namespace Calculator.UI.ViewModels
 
         private void UpdateOperandA()
         {
-            try
-            {
-                if (long.TryParse(operandAInput, out long value))
-                    operandA = value;
-                else if (operandAInput.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                    operandA = Convert.ToInt64(operandAInput, 16);
-                else if (operandAInput.StartsWith("0b", StringComparison.OrdinalIgnoreCase))
-                    operandA = Convert.ToInt64(operandAInput.Substring(2), 2);
-                else
-                    operandA = 0;
-            }
-            catch
-            {
-                operandA = 0;
-            }
-
-            OnPropertyChanged(nameof(OperandABinary));
-            OnPropertyChanged(nameof(OperandAHex));
-            OnPropertyChanged(nameof(OperandADecimal));
+            if (long.TryParse(operandAInput, out long result))
+                operandA = result;
+            else
+                operandA = 0; // 빈 입력이나 잘못된 값 → 0 처리
         }
 
         private void UpdateOperandB()
         {
-            try
-            {
-                if (long.TryParse(operandBInput, out long value))
-                    operandB = value;
-                else if (operandBInput.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                    operandB = Convert.ToInt64(operandBInput, 16);
-                else if (operandBInput.StartsWith("0b", StringComparison.OrdinalIgnoreCase))
-                    operandB = Convert.ToInt64(operandBInput.Substring(2), 2);
-                else
-                    operandB = 0;
-            }
-            catch
-            {
+            if (long.TryParse(operandBInput, out long result))
+                operandB = result;
+            else
                 operandB = 0;
-            }
-
-            OnPropertyChanged(nameof(OperandBBinary));
-            OnPropertyChanged(nameof(OperandBHex));
-            OnPropertyChanged(nameof(OperandBDecimal));
         }
+
 
         private void UpdateResults()
         {
@@ -374,11 +449,28 @@ namespace Calculator.UI.ViewModels
                 case "XOR":
                     result = operandA ^ operandB;
                     break;
+                case "NAND":
+                    result = ~(operandA & operandB);
+                    break;
+                case "NOR":
+                    result = ~(operandA | operandB);
+                    break;
+                case "NXOR":
+                    result = ~(operandA ^ operandB);
+                    break;
                 case "NOT A":
                     result = ~operandA;
                     break;
                 case "NOT B":
                     result = ~operandB;
+                    break;
+                case var op when op.StartsWith("A <<"):
+                    if (operandB >= 0 && operandB < 64)
+                        result = operandA << (int)operandB;
+                    break;
+                case var op when op.StartsWith("A >>"):
+                    if (operandB >= 0 && operandB < 64)
+                        result = operandA >> (int)operandB;
                     break;
                 default:
                     result = 0;
@@ -386,6 +478,7 @@ namespace Calculator.UI.ViewModels
             }
             UpdateResultOutputs();
         }
+
 
         private void UpdateResultOutputs()
         {
@@ -447,7 +540,6 @@ namespace Calculator.UI.ViewModels
                 }
             }
         }
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
