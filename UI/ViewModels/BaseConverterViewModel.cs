@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Models;
+using Calculator.Core.Models;
 using Calculator.Core.Services;
 using Calculator.UI.Views;
 using System;
@@ -13,7 +13,7 @@ namespace Calculator.UI.ViewModels
 {
     public class BaseConverterViewModel : INotifyPropertyChanged
     {
-        private string inputValue = "0";
+        private string inputValue = string.Empty;
         private int currentBase = 10;
         private long decimalValue = 0;
         private string display = string.Empty;
@@ -30,14 +30,21 @@ namespace Calculator.UI.ViewModels
             get => inputValue;
             set
             {
-                // 입력 값이 바뀌었을 때 "0"을 비우는 로직을 여기에 추가
-                if (inputValue == "0" && !string.IsNullOrEmpty(value) && value != "0")
+                // 들어온 값이 유효하지 않으면 아무것도 하지 않고 즉시 종료합니다.
+                if (!IsValidInput(value))
                 {
-                    inputValue = value;
+                    return;
+                }
+
+                // 유효한 값일 경우에만 아래 로직을 실행합니다.
+                string? newInputValue = value;
+                if (inputValue == "0" && !string.IsNullOrEmpty(newInputValue) && newInputValue != "0")
+                {
+                    inputValue = newInputValue;
                 }
                 else
                 {
-                    inputValue = value ?? "0";
+                    inputValue = newInputValue ?? "0";
                 }
 
                 OnPropertyChanged();
@@ -46,6 +53,13 @@ namespace Calculator.UI.ViewModels
             }
         }
 
+        private bool IsValidInput(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return true; // 빈 입력은 유효한 것으로 처리
+
+            // 허용되지 않는 문자가 포함되어 있으면 false를 반환합니다.
+            return !System.Text.RegularExpressions.Regex.IsMatch(input, @"[^0-9a-fA-F]");
+        }
         public string Display
         {
             get => display;
@@ -186,6 +200,7 @@ namespace Calculator.UI.ViewModels
         public string HexOutput => Convert.ToString(decimalValue, 16).ToUpper();
 
         // Commands
+        public ICommand? KeyPressCommand { get; private set; }
         public ICommand? DigitCommand { get; private set; }
         public ICommand? ClearCommand { get; private set; }
         public ICommand? BackspaceCommand { get; private set; }
@@ -202,7 +217,8 @@ namespace Calculator.UI.ViewModels
             InitializeCommands();
 
             // 초기 값을 "0"으로 설정
-            InputValue = "0";
+            display = "0";
+            inputValue = string.Empty;
             UpdateDigitAvailability();
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
@@ -211,6 +227,7 @@ namespace Calculator.UI.ViewModels
 
         private void InitializeCommands()
         {
+            KeyPressCommand = new RelayCommand(ExecuteKeyPress);
             DigitCommand = new RelayCommand(ExecuteDigit);
             ClearCommand = new RelayCommand(ExecuteClear);
             BackspaceCommand = new RelayCommand(ExecuteBackspace);
@@ -242,7 +259,43 @@ namespace Calculator.UI.ViewModels
             };
         }
 
+        private void ExecuteKeyPress(object? parameter)
+        {
+            // View에서 전달된 KeyEventArgs를 받아 처리
+            if (parameter is KeyEventArgs keyArgs)
+            {
+                HandleKeyPress(keyArgs.Key);
+            }
+        }
 
+        private void HandleKeyPress(Key key)
+        {
+            // 백스페이스와 삭제 키 먼저 처리
+            if (key == Key.Back) { ExecuteBackspace(null); return; }
+            if (key == Key.Delete) { ExecuteClear(null); return; }
+
+            // 키를 문자로 변환 (숫자 0-9, 알파벳 A-F)
+            string digit = string.Empty;
+            if (key >= Key.D0 && key <= Key.D9)
+                digit = ((char)('0' + (key - Key.D0))).ToString();
+            else if (key >= Key.NumPad0 && key <= Key.NumPad9)
+                digit = ((char)('0' + (key - Key.NumPad0))).ToString();
+            else if (key >= Key.A && key <= Key.F)
+                digit = key.ToString();
+
+            // 유효한 입력이 아니면 무시
+            if (string.IsNullOrEmpty(digit)) return;
+
+            // 현재 진법에 문자가 유효한지 확인
+            char c = digit[0];
+            int val = (c >= 'A') ? (10 + c - 'A') : (c - '0');
+
+            if (val < currentBase)
+            {
+                // 유효하면 숫자 입력 처리 메서드 호출
+                ExecuteDigit(digit);
+            }
+        }
         private void ExecuteDigit(object? parameter)
         {
             string? digit = parameter?.ToString();
@@ -287,16 +340,24 @@ namespace Calculator.UI.ViewModels
             if (Clipboard.ContainsText())
             {
                 string clipboardText = Clipboard.GetText().Trim();
-                if (IsValidInput(clipboardText))
-                {
-                    string oldValue = InputValue;
-                    InputValue = clipboardText;
 
-                    // Add paste action to history
-                    if (InputValue != oldValue)
-                    {
-                        historyProvider.Add($"Paste: {GetCurrentBaseString()}{InputValue}", decimalValue);
-                    }
+                // 현재 진법에 따라 허용할 문자 패턴을 결정
+                string pattern = currentBase switch
+                {
+                    2 => @"[^0-1]",
+                    8 => @"[^0-7]",
+                    10 => @"[^0-9]",
+                    16 => @"[^0-9a-fA-F]",
+                    _ => @"[\s\S]" // 그 외의 경우 모든 문자를 제거
+                };
+
+                // 정규식을 사용해 허용된 문자만 남김
+                string filteredText = Regex.Replace(clipboardText, pattern, string.Empty);
+
+                if (!string.IsNullOrEmpty(filteredText))
+                {
+                    InputValue = filteredText;
+                    historyProvider.Add($"Paste: {GetCurrentBaseString()}{InputValue}", decimalValue);
                 }
             }
         }
@@ -332,19 +393,6 @@ namespace Calculator.UI.ViewModels
             OnPropertyChanged(nameof(OctalOutput));
             OnPropertyChanged(nameof(DecimalOutput));
             OnPropertyChanged(nameof(HexOutput));
-        }
-
-        private bool IsValidInput(string input)
-        {
-            try
-            {
-                Convert.ToInt64(input, currentBase);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         private void ExecuteShowHistory(object? parameter)
