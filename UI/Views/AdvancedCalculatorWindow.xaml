@@ -1,4 +1,4 @@
-﻿<Window x:Class="Calculator.UI.Views.AdvancedCalculatorWindow"
+<Window x:Class="Calculator.UI.Views.AdvancedCalculatorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
@@ -237,7 +237,7 @@
             <Button Content="0" Command="{Binding NumberCommand}" CommandParameter="0" Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
             <Button Content="." Command="{Binding NumberCommand}" CommandParameter="." Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
             <Button Content="Rad/Deg" Command="{Binding ToggleAngleModeCommand}" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
-            <Button Content="Close" Click="CloseButton_Click" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+            <Button Content="Close" Command="{Binding CloseCommand}" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
 		</UniformGrid>
 	</Grid>
 </Window>
