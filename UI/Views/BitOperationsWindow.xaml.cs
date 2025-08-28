@@ -1,4 +1,4 @@
-﻿using Calculator.UI.ViewModels;
+using Calculator.UI.ViewModels;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,11 +12,6 @@ namespace Calculator.UI.Views
         public BitOperationsWindow()
         {
             InitializeComponent();
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
 
         private void OperandA_GotFocus(object sender, RoutedEventArgs e)
