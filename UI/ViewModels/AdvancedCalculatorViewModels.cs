@@ -336,22 +336,25 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteToggleSign(object? parameter)
         {
-            if (string.IsNullOrEmpty(CurrentInput)) return;
+            if (string.IsNullOrWhiteSpace(CurrentInput)) return;
 
-            var tokens = CurrentInput.Trim().Split(' ');
-            string lastToken = tokens[^1];
+            string trimmed = CurrentInput.Trim();
 
-            if (decimal.TryParse(lastToken, out _))
+            // 전체가 이미 음수로 묶여 있는지 검사: -(수식)
+            if (trimmed.StartsWith("-(") && trimmed.EndsWith(")"))
             {
-                if (lastToken.StartsWith("-"))
-                    tokens[^1] = lastToken.Substring(1);
-                else
-                    tokens[^1] = "-" + lastToken;
-
-                CurrentInput = string.Join(" ", tokens);
-                Display = CurrentInput;
+                // 음수 해제
+                CurrentInput = trimmed.Substring(2, trimmed.Length - 3);
             }
+            else
+            {
+                // 수식 전체를 음수로 감싸기
+                CurrentInput = $"-({trimmed})";
+            }
+            Display = CurrentInput;
         }
+
+
 
         // Function executers
         private void ExecuteRound(object? parameter) => ExecuteFunction("round");
@@ -410,9 +413,18 @@ namespace Calculator.UI.ViewModels
         private void ExecuteFunction(string functionName)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
-            CurrentInput = $"{functionName}({CurrentInput})";
+
+            if (isResultDisplayed)
+            {
+                isResultDisplayed = false;
+            }
+
+            // 숫자 주위에 함수 씌우기
+            string expr = $"{functionName}({CurrentInput.Replace(" ", "")})";
+            CurrentInput = expr;
             Display = CurrentInput;
         }
+
 
         private void ExecuteUnaryOperation(Func<CalcValue, CalcValue> operation, string operatorSymbol)
         {

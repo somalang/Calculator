@@ -149,7 +149,7 @@ namespace Calculator.Core.Engine
         public CalcValue Log(CalcValue value)
         {
             if (value.Value <= 0)
-                throw new InvalidOperationException("로그 함수의 인수는 양수여야 합니다");
+                throw new InvalidOperationException("로그 함수의 인수는 양수여야 함");
 
             return new CalcValue((decimal)Math.Log10((double)value.Value));
         }
@@ -157,7 +157,7 @@ namespace Calculator.Core.Engine
         public CalcValue Ln(CalcValue value)
         {
             if (value.Value <= 0)
-                throw new InvalidOperationException("자연로그 함수의 인수는 양수여야 합니다");
+                throw new InvalidOperationException("자연로그 함수의 인수는 양수여야 함");
 
             return new CalcValue((decimal)Math.Log((double)value.Value));
         }

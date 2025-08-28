@@ -28,7 +28,37 @@ namespace Calculator.Core.Engine
                     var numberStr = ExtractNumber(input, ref position);
                     tokens.Add(new Token(TokenType.Number, numberStr, position));
                 }
-                else if (IsOperator(current))
+                else if (current == '-')
+                {
+                    bool isUnary = (position == 0) // 맨 앞
+                                   || (tokens.Count > 0 && (
+                                          tokens[^1].Type == TokenType.LeftParen
+                                          || tokens[^1].Type == TokenType.Operator)); // 연산자 뒤
+
+                    if (isUnary)
+                    {
+                        position++;
+                        if (position < input.Length && input[position] == '(')
+                        {
+                            // -(...) → -1 * (...)
+                            tokens.Add(new Token(TokenType.Number, "-1", position));
+                            tokens.Add(new Token(TokenType.Operator, "*", position));
+                        }
+                        else
+                        {
+                            // -숫자 → 음수 숫자
+                            var numberStr = "-" + ExtractNumber(input, ref position);
+                            tokens.Add(new Token(TokenType.Number, numberStr, position));
+                        }
+                    }
+                    else
+                    {
+                        // 이항 연산자
+                        tokens.Add(new Token(TokenType.Operator, "-", position));
+                        position++;
+                    }
+                }
+                else if (IsOperator(current)) // 이제 여기선 -, +, *, / 중 -는 빠짐
                 {
                     tokens.Add(new Token(TokenType.Operator, current.ToString(), position));
                     position++;
