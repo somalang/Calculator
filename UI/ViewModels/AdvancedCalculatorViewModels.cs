@@ -101,6 +101,10 @@ namespace Calculator.UI.ViewModels
         public ICommand? ToggleAngleModeCommand { get; private set; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
+        public ICommand? KeyPressCommand { get; private set; }
+        public ICommand? CopyCommand { get; private set; }
+
+        public ICommand? PasteCommand { get; private set; }
 
         public AdvancedCalculatorViewModel()
         {
@@ -145,6 +149,10 @@ namespace Calculator.UI.ViewModels
             LeftParenCommand = new RelayCommand(ExecuteLeftParen);
             RightParenCommand = new RelayCommand(ExecuteRightParen);
             ToggleSignCommand = new RelayCommand(ExecuteToggleSign);
+            KeyPressCommand = new RelayCommand(ExecuteKeyPress);
+            CopyCommand = new RelayCommand(ExecuteCopy);
+
+            PasteCommand = new RelayCommand(ExecutePaste);
 
             // Rounding
             RoundCommand = new RelayCommand(ExecuteRound);
@@ -353,8 +361,183 @@ namespace Calculator.UI.ViewModels
             }
             Display = CurrentInput;
         }
+        private void ExecuteCopy(object? parameter)
+        {
+            try
+            {
+                Clipboard.SetText(Display);
+            }
+            catch
+            {
+                Display = "클립보드 복사 오류";
+            }
+        }
+
+        private void ExecutePaste(object? parameter)
+        {
+            try
+            {
+                string clipboardText = Clipboard.GetText();
+
+                if (!string.IsNullOrWhiteSpace(clipboardText))
+                {
+                    // ✅ 숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
+                    string filtered = System.Text.RegularExpressions.Regex.Replace(
+                        clipboardText, @"[^0-9+\-*/().\s]", string.Empty);
+
+                    // 공백 제거 후 반영
+                    filtered = filtered.Trim();
+
+                    if (!string.IsNullOrEmpty(filtered))
+                    {
+                        CurrentInput = filtered;
+                        Display = CurrentInput;
+                        isResultDisplayed = false;
+                    }
+                    else
+                    {
+                        Display = "붙여넣기할 유효한 문자가 없음";
+                    }
+                }
+            }
+            catch
+            {
+                Display = "클립보드 붙여넣기 오류";
+            }
+        }
+
+        private void ExecuteKeyPress(object? parameter)
+        {
+            if (parameter is string keyString && Enum.TryParse<Key>(keyString, out Key key))
+            {
+                HandleKeyPress(key);
+            }
+            else if (parameter is KeyEventArgs keyArgs)
+            {
+                HandleKeyPress(keyArgs.Key);
+            }
+            else if (parameter is Key directKey)
+            {
+                HandleKeyPress(directKey);
+            }
+        }
+        private void HandleCalculationResult(CalcValue result, string expression = "")
+        {
+            double value = (double)result.Value; // decimal → double 변환
+
+            if (double.IsNaN(value))
+            {
+                Display = "결과가 유효하지 않습니다 (NaN)";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+                return;
+            }
+            if (double.IsInfinity(value))
+            {
+                Display = "∞ (무한대)";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+                return;
+            }
+
+            Display = result.ToString();
+            CurrentInput = Display;
+            isResultDisplayed = true;
+
+            if (!string.IsNullOrEmpty(expression))
+                historyProvider.Add(expression, result);
+        }
 
 
+        private void HandleKeyPress(Key key)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                switch (key)
+                {
+                    case Key.C:
+                        ExecuteCopy(null);
+                        return;
+                    case Key.V:
+                        ExecutePaste(null);
+                        return;
+                }
+            }
+
+            switch (key)
+            {
+                case Key.D0:
+                case Key.NumPad0:
+                    ExecuteNumber("0");
+                    break;
+                case Key.D1:
+                case Key.NumPad1:
+                    ExecuteNumber("1");
+                    break;
+                case Key.D2:
+                case Key.NumPad2:
+                    ExecuteNumber("2");
+                    break;
+                case Key.D3:
+                case Key.NumPad3:
+                    ExecuteNumber("3");
+                    break;
+                case Key.D4:
+                case Key.NumPad4:
+                    ExecuteNumber("4");
+                    break;
+                case Key.D5:
+                case Key.NumPad5:
+                    ExecuteNumber("5");
+                    break;
+                case Key.D6:
+                case Key.NumPad6:
+                    ExecuteNumber("6");
+                    break;
+                case Key.D7:
+                case Key.NumPad7:
+                    ExecuteNumber("7");
+                    break;
+                case Key.D8:
+                case Key.NumPad8:
+                    ExecuteNumber("8");
+                    break;
+                case Key.D9:
+                case Key.NumPad9:
+                    ExecuteNumber("9");
+                    break;
+                case Key.OemPeriod:
+                case Key.Decimal:
+                    ExecuteNumber(".");
+                    break;
+                case Key.OemPlus:
+                case Key.Add:
+                    ExecuteOperator("+");
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    ExecuteOperator("-");
+                    break;
+                case Key.Multiply:
+                    ExecuteOperator("*");
+                    break;
+                case Key.Divide:
+                    ExecuteOperator("/");
+                    break;
+                case Key.Enter:
+                    ExecuteEquals(null);
+                    break;
+                case Key.Escape:
+                    ExecuteClearAll(null);
+                    break;
+                case Key.Back:
+                    ExecuteBackspace(null);
+                    break;
+                case Key.Delete:
+                    ExecuteClear(null);
+                    break;
+            }
+        }
 
         // Function executers
         private void ExecuteRound(object? parameter) => ExecuteFunction("round");
