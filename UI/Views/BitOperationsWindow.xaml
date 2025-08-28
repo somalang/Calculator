@@ -4,8 +4,8 @@
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
 
         Title="Bit Operations Calculator"
-        Height="837"
-        Width="812"
+        Height="927"
+        Width="842"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         MinHeight="500"
@@ -257,24 +257,24 @@
         <GroupBox Grid.Row="5" Header="Number Pad" Padding="10" Margin="0,0,0,10">
             <UniformGrid Rows="4" Columns="3">
                 <!-- Row 1 -->
-                <Button Content="7" Command="{Binding NumberCommand}" CommandParameter="7" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="8" Command="{Binding NumberCommand}" CommandParameter="8" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="9" Command="{Binding NumberCommand}" CommandParameter="9" Style="{StaticResource FunctionButtonStyle}" />
+                <Button Content="7" Command="{Binding NumberCommand}" CommandParameter="7" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="8" Command="{Binding NumberCommand}" CommandParameter="8" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="9" Command="{Binding NumberCommand}" CommandParameter="9" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
 
                 <!-- Row 2 -->
-                <Button Content="4" Command="{Binding NumberCommand}" CommandParameter="4" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="5" Command="{Binding NumberCommand}" CommandParameter="5" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="6" Command="{Binding NumberCommand}" CommandParameter="6" Style="{StaticResource FunctionButtonStyle}" />
+                <Button Content="4" Command="{Binding NumberCommand}" CommandParameter="4" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="5" Command="{Binding NumberCommand}" CommandParameter="5" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="6" Command="{Binding NumberCommand}" CommandParameter="6" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
 
                 <!-- Row 3 -->
-                <Button Content="1" Command="{Binding NumberCommand}" CommandParameter="1" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="2" Command="{Binding NumberCommand}" CommandParameter="2" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="3" Command="{Binding NumberCommand}" CommandParameter="3" Style="{StaticResource FunctionButtonStyle}" />
+                <Button Content="1" Command="{Binding NumberCommand}" CommandParameter="1" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="2" Command="{Binding NumberCommand}" CommandParameter="2" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="3" Command="{Binding NumberCommand}" CommandParameter="3" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
 
                 <!-- Row 4 -->
-                <Button Content="+/-" Command="{Binding ToggleSignCommand}" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="0" Command="{Binding NumberCommand}" CommandParameter="0" Style="{StaticResource FunctionButtonStyle}" />
-                <Button Content="⌫" Command="{Binding BackspaceCommand}" Style="{StaticResource FunctionButtonStyle}" />
+                <Button Content="+/-" Command="{Binding ToggleSignCommand}" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="0" Command="{Binding NumberCommand}" CommandParameter="0" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
+                <Button Content="⌫" Command="{Binding BackspaceCommand}" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
             </UniformGrid>
         </GroupBox>
 

@@ -22,19 +22,28 @@ namespace Calculator.UI.Views
         private void OperandA_GotFocus(object sender, RoutedEventArgs e)
         {
             if (DataContext is BitOperationsViewModel vm)
+            {
                 vm.HandleOperandAGotFocus();
+                Debug.WriteLine($"OperandA got focus, IsOperandAFocused={vm.IsOperandAFocused}");
+            }
         }
 
         private void OperandA_LostFocus(object sender, RoutedEventArgs e)
         {
             if (DataContext is BitOperationsViewModel vm)
+            {
                 vm.HandleOperandALostFocus();
+                Debug.WriteLine($"OperandA lost focus, IsOperandAFocused={vm.IsOperandAFocused}");
+            }
         }
 
         private void OperandB_GotFocus(object sender, RoutedEventArgs e)
         {
             if (DataContext is BitOperationsViewModel vm)
+            {
                 vm.HandleOperandBGotFocus();
+                Debug.WriteLine($"OperandB got focus, IsOperandBFocused={vm.IsOperandBFocused}");
+            }
         }
 
         private void OperandB_LostFocus(object sender, RoutedEventArgs e)
