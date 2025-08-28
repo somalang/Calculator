@@ -51,7 +51,7 @@ namespace Calculator.Core.Engine
                 "-" => left - right,
                 "*" => left * right,
                 "/" => left / right,
-                "pow" => new CalcValue((decimal)Math.Pow((double)left.Value, (double)right.Value)),
+                "^" => new CalcValue((decimal)Math.Pow((double)left.Value, (double)right.Value)), // 추가
                 _ => throw new NotSupportedException($"지원하지 않는 연산자: {operatorSymbol}")
             };
         }

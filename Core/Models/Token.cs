@@ -1,4 +1,6 @@
-﻿namespace Calculator.Core.Models
+﻿using System;
+
+namespace Calculator.Core.Models
 {
     public enum TokenType
     {
@@ -22,6 +24,7 @@
         public int Precedence { get; set; }
         public Associativity Associativity { get; set; }
         public int Position { get; set; }
+
         public Token(TokenType type, string value, int position = 0)
         {
             Type = type;
@@ -29,6 +32,7 @@
             Position = position;
             SetPrecedenceAndAssociativity();
         }
+
         private void SetPrecedenceAndAssociativity()
         {
             switch (Value)
@@ -42,6 +46,10 @@
                 case "/":
                     Precedence = 2;
                     Associativity = Associativity.Left;
+                    break;
+                case "^":  // 거듭제곱 추가
+                    Precedence = 4;  // 가장 높은 우선순위
+                    Associativity = Associativity.Right;  // 우결합 (2^3^4 = 2^(3^4))
                     break;
                 case "sqrt":
                 case "sqr":
