@@ -170,20 +170,43 @@ namespace Calculator.UI.ViewModels
             {
                 string expression = CurrentInput;
                 CalcValue result = calculator.Evaluate(expression);
-                Display = result.ToString();
-                CurrentInput = Display;
-                isResultDisplayed = true;
-
-                // 히스토리에 추가
-                historyProvider.Add(expression, result);
+                HandleCalculationResult(result, expression);
             }
-            catch (Exception ex)
-            {
-                Display = $"오류: {ex.Message}";
-                CurrentInput = string.Empty;
-                isResultDisplayed = true;
-            }
+            catch (InvalidOperationException ex)
+{
+    if (ex.InnerException != null)
+    {
+        if (ex.InnerException is DivideByZeroException)
+        {
+            Display = "0으로 나눌 수 없습니다";
         }
+        else if (ex.InnerException is OverflowException)
+        {
+            Display = "오버플로우 발생";
+        }
+        else
+        {
+            Display = "계산 오류";
+        }
+    }
+    else
+    {
+        // InnerException 없으면 메시지에 의존
+        if (ex.Message.Contains("0으로 나눌 수 없습니다"))
+            Display = "0으로 나눌 수 없습니다";
+        else if (ex.Message.Contains("오버플로우"))
+            Display = "오버플로우 발생";
+        else
+            Display = "계산 오류";
+    }
+
+    CurrentInput = string.Empty;
+    isResultDisplayed = true;
+}
+
+
+        }
+
 
         private void ExecuteClear(object? parameter)
         {
@@ -332,9 +355,9 @@ namespace Calculator.UI.ViewModels
             {
                 Clipboard.SetText(Display);
             }
-            catch (Exception)
+            catch
             {
-                // 클립보드 복사 실패시 무시
+                Display = "클립보드 복사 오류";
             }
         }
 
@@ -343,34 +366,93 @@ namespace Calculator.UI.ViewModels
             try
             {
                 string clipboardText = Clipboard.GetText();
-                if (!string.IsNullOrWhiteSpace(clipboardText) &&
-                    calculator.ValidateExpression(clipboardText))
+
+                if (!string.IsNullOrWhiteSpace(clipboardText))
                 {
-                    CurrentInput = clipboardText;
-                    Display = CurrentInput;
-                    isResultDisplayed = false;
+                    // ✅ 숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
+                    string filtered = System.Text.RegularExpressions.Regex.Replace(
+                        clipboardText, @"[^0-9+\-*/().\s]", string.Empty);
+
+                    // 공백 제거 후 반영
+                    filtered = filtered.Trim();
+
+                    if (!string.IsNullOrEmpty(filtered))
+                    {
+                        CurrentInput = filtered;
+                        Display = CurrentInput;
+                        isResultDisplayed = false;
+                    }
+                    else
+                    {
+                        Display = "붙여넣기할 유효한 문자가 없음";
+                    }
                 }
             }
-            catch (Exception)
+            catch
             {
-                // 클립보드 붙여넣기 실패시 무시
+                Display = "클립보드 붙여넣기 오류";
             }
         }
+
 
         private void ExecuteKeyPress(object? parameter)
         {
-            if (parameter is KeyEventArgs keyArgs)
-            {
-                HandleKeyPress(keyArgs.Key);
-            }
-            else if (parameter is Key key)
+            if (parameter is string keyString && Enum.TryParse<Key>(keyString, out Key key))
             {
                 HandleKeyPress(key);
             }
+            else if (parameter is KeyEventArgs keyArgs)
+            {
+                HandleKeyPress(keyArgs.Key);
+            }
+            else if (parameter is Key directKey)
+            {
+                HandleKeyPress(directKey);
+            }
         }
+        private void HandleCalculationResult(CalcValue result, string expression = "")
+        {
+            double value = (double)result.Value; // decimal → double 변환
+
+            if (double.IsNaN(value))
+            {
+                Display = "결과가 유효하지 않습니다 (NaN)";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+                return;
+            }
+            if (double.IsInfinity(value))
+            {
+                Display = "∞ (무한대)";
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+                return;
+            }
+
+            Display = result.ToString();
+            CurrentInput = Display;
+            isResultDisplayed = true;
+
+            if (!string.IsNullOrEmpty(expression))
+                historyProvider.Add(expression, result);
+        }
+
 
         private void HandleKeyPress(Key key)
         {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                switch (key)
+                {
+                    case Key.C:
+                        ExecuteCopy(null);
+                        return;
+                    case Key.V:
+                        ExecutePaste(null);
+                        return;
+                }
+            }
+
             switch (key)
             {
                 case Key.D0:

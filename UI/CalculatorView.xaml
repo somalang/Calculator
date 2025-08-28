@@ -12,7 +12,47 @@
     <Window.DataContext>
         <vm:CalculatorViewModel />
     </Window.DataContext>
+    <!-- Window.InputBindings 부분 수정 -->
+    <Window.InputBindings>
+        <KeyBinding Key="D0" Command="{Binding KeyPressCommand}" CommandParameter="D0"/>
+        <KeyBinding Key="D1" Command="{Binding KeyPressCommand}" CommandParameter="D1"/>
+        <KeyBinding Key="D2" Command="{Binding KeyPressCommand}" CommandParameter="D2"/>
+        <KeyBinding Key="D3" Command="{Binding KeyPressCommand}" CommandParameter="D3"/>
+        <KeyBinding Key="D4" Command="{Binding KeyPressCommand}" CommandParameter="D4"/>
+        <KeyBinding Key="D5" Command="{Binding KeyPressCommand}" CommandParameter="D5"/>
+        <KeyBinding Key="D6" Command="{Binding KeyPressCommand}" CommandParameter="D6"/>
+        <KeyBinding Key="D7" Command="{Binding KeyPressCommand}" CommandParameter="D7"/>
+        <KeyBinding Key="D8" Command="{Binding KeyPressCommand}" CommandParameter="D8"/>
+        <KeyBinding Key="D9" Command="{Binding KeyPressCommand}" CommandParameter="D9"/>
+        <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyCommand}" />
+        <KeyBinding Key="V" Modifiers="Control" Command="{Binding PasteCommand}" />
+        <!-- 숫자패드 키도 추가 -->
+        <KeyBinding Key="NumPad0" Command="{Binding KeyPressCommand}" CommandParameter="NumPad0"/>
+        <KeyBinding Key="NumPad1" Command="{Binding KeyPressCommand}" CommandParameter="NumPad1"/>
+        <KeyBinding Key="NumPad2" Command="{Binding KeyPressCommand}" CommandParameter="NumPad2"/>
+        <KeyBinding Key="NumPad3" Command="{Binding KeyPressCommand}" CommandParameter="NumPad3"/>
+        <KeyBinding Key="NumPad4" Command="{Binding KeyPressCommand}" CommandParameter="NumPad4"/>
+        <KeyBinding Key="NumPad5" Command="{Binding KeyPressCommand}" CommandParameter="NumPad5"/>
+        <KeyBinding Key="NumPad6" Command="{Binding KeyPressCommand}" CommandParameter="NumPad6"/>
+        <KeyBinding Key="NumPad7" Command="{Binding KeyPressCommand}" CommandParameter="NumPad7"/>
+        <KeyBinding Key="NumPad8" Command="{Binding KeyPressCommand}" CommandParameter="NumPad8"/>
+        <KeyBinding Key="NumPad9" Command="{Binding KeyPressCommand}" CommandParameter="NumPad9"/>
 
+        <KeyBinding Key="OemPeriod" Command="{Binding KeyPressCommand}" CommandParameter="OemPeriod"/>
+        <KeyBinding Key="Decimal" Command="{Binding KeyPressCommand}" CommandParameter="Decimal"/>
+        <KeyBinding Key="OemPlus" Command="{Binding KeyPressCommand}" CommandParameter="OemPlus"/>
+        <KeyBinding Key="Add" Command="{Binding KeyPressCommand}" CommandParameter="Add"/>
+        <KeyBinding Key="OemMinus" Command="{Binding KeyPressCommand}" CommandParameter="OemMinus"/>
+        <KeyBinding Key="Subtract" Command="{Binding KeyPressCommand}" CommandParameter="Subtract"/>
+        <KeyBinding Key="Multiply" Command="{Binding KeyPressCommand}" CommandParameter="Multiply"/>
+        <KeyBinding Key="Divide" Command="{Binding KeyPressCommand}" CommandParameter="Divide"/>
+        <KeyBinding Key="OemQuestion" Command="{Binding KeyPressCommand}" CommandParameter="OemQuestion"/>
+        <KeyBinding Key="Enter" Command="{Binding KeyPressCommand}" CommandParameter="Enter"/>
+        <KeyBinding Key="Return" Command="{Binding KeyPressCommand}" CommandParameter="Return"/>
+        <KeyBinding Key="Escape" Command="{Binding KeyPressCommand}" CommandParameter="Escape"/>
+        <KeyBinding Key="Back" Command="{Binding KeyPressCommand}" CommandParameter="Back"/>
+        <KeyBinding Key="Delete" Command="{Binding KeyPressCommand}" CommandParameter="Delete"/>
+    </Window.InputBindings>
     <Window.Resources>
         <Style x:Key="BaseButtonStyle"
                TargetType="Button">
@@ -131,7 +171,7 @@
                 <Button Grid.Column="1" Width="30" Height="30" 
                         Command="{Binding ShowHistoryCommand}"
                         Style="{StaticResource FunctionButtonStyle}"
-                        Margin="5,0,0,0">
+                        Margin="5,0,0,0" Focusable="False">
                     <Viewbox Width="16" Height="16">
                         <Canvas Width="24" Height="24">
                             <!-- 시계 아이콘 경로 -->
@@ -147,15 +187,16 @@
                     CornerRadius="8"
                     Margin="0,10,0,15">
                 <TextBox Text="{Binding Display, Mode=OneWay}"
-                         FontSize="32"
-                         FontWeight="Normal"
-                         Foreground="White"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         IsReadOnly="True"
-                         TextAlignment="Right"
-                         VerticalAlignment="Center"
-                         Padding="15,0" TextChanged="TextBox_TextChanged" Height="76" />
+                    FontSize="32"
+                    Foreground="White"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    IsReadOnly="True"
+                    Focusable="False"
+                    TextAlignment="Right"
+                    VerticalAlignment="Center"
+                    Padding="15,0"/>
+
             </Border>
 
             <UniformGrid Grid.Row="2"
@@ -163,95 +204,95 @@
                          Columns="4">
                 <Button Content="%"
                         Command="{Binding PercentCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="CE"
                         Command="{Binding ClearCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="C"
                         Command="{Binding ClearAllCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="⌫"
                         Command="{Binding BackspaceCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
 
                 <Button Content="1/ₓ"
                         Command="{Binding ReciprocalCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="x²"
                         Command="{Binding SquareCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="√"
                         Command="{Binding SqrtCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
+                        Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
                 <Button Content="/"
                         Command="{Binding OperatorCommand}"
                         CommandParameter="/"
-                        Style="{StaticResource OperatorButtonStyle}" />
+                        Style="{StaticResource OperatorButtonStyle}" Focusable="False"/>
 
                 <Button Content="7"
                         Command="{Binding NumberCommand}"
                         CommandParameter="7"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="8"
                         Command="{Binding NumberCommand}"
                         CommandParameter="8"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="9"
                         Command="{Binding NumberCommand}"
                         CommandParameter="9"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="*"
                         Command="{Binding OperatorCommand}"
                         CommandParameter="*"
-                        Style="{StaticResource OperatorButtonStyle}" />
+                        Style="{StaticResource OperatorButtonStyle}" Focusable="False"/>
 
                 <Button Content="4"
                         Command="{Binding NumberCommand}"
                         CommandParameter="4"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="5"
                         Command="{Binding NumberCommand}"
                         CommandParameter="5"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="6"
                         Command="{Binding NumberCommand}"
                         CommandParameter="6"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="-"
                         Command="{Binding OperatorCommand}"
                         CommandParameter="-"
-                        Style="{StaticResource OperatorButtonStyle}" />
+                        Style="{StaticResource OperatorButtonStyle}" Focusable="False"/>
 
                 <Button Content="1"
                         Command="{Binding NumberCommand}"
                         CommandParameter="1"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="2"
                         Command="{Binding NumberCommand}"
                         CommandParameter="2"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="3"
                         Command="{Binding NumberCommand}"
                         CommandParameter="3"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="+"
                         Command="{Binding OperatorCommand}"
                         CommandParameter="+"
-                        Style="{StaticResource OperatorButtonStyle}" />
+                        Style="{StaticResource OperatorButtonStyle}" Focusable="False"/>
 
                 <!-- +/- command button -->
                 <Button Content="+/-"
                         Command="{Binding ToggleSignCommand}"
                         CommandParameter="+/-"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="0"
                         Command="{Binding NumberCommand}"
                         CommandParameter="0"
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="."
                         Command="{Binding NumberCommand}"
                         CommandParameter="."
-                        Style="{StaticResource NumberButtonStyle}" />
+                        Style="{StaticResource NumberButtonStyle}" Focusable="False"/>
                 <Button Content="="
                         Command="{Binding EqualsCommand}"
                         Style="{StaticResource EqualsButtonStyle}" />
