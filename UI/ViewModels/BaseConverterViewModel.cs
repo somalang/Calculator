@@ -30,12 +30,22 @@ namespace Calculator.UI.ViewModels
             get => inputValue;
             set
             {
-                inputValue = value ?? "0";
+                // 입력 값이 바뀌었을 때 "0"을 비우는 로직을 여기에 추가
+                if (inputValue == "0" && !string.IsNullOrEmpty(value) && value != "0")
+                {
+                    inputValue = value;
+                }
+                else
+                {
+                    inputValue = value ?? "0";
+                }
+
                 OnPropertyChanged();
                 UpdateDecimalValue();
                 UpdateOutputs();
             }
         }
+
         public string Display
         {
             get => display;
@@ -189,8 +199,10 @@ namespace Calculator.UI.ViewModels
         public BaseConverterViewModel()
         {
             historyProvider = App.HistoryService ?? new HistoryService();
-            InitializeCommands();       // 추가
+            InitializeCommands();
 
+            // 초기 값을 "0"으로 설정
+            InputValue = "0";
             UpdateDigitAvailability();
             OpenMenuCommand = new RelayCommand(OpenMenu);
         }
@@ -236,17 +248,19 @@ namespace Calculator.UI.ViewModels
             string? digit = parameter?.ToString();
             if (string.IsNullOrEmpty(digit)) return;
 
-            string oldValue = InputValue;
-            if (InputValue == "0")
-                InputValue = digit;
-            else
-                InputValue += digit;
-
-            // Add conversion to history when input changes
-            if (InputValue != oldValue && InputValue != "0")
+            // '0'이 아닌 다른 숫자가 입력되면 기존의 '0'을 대체
+            if (inputValue == "0" && digit != "0")
             {
-                AddConversionToHistory();
+                InputValue = digit;
             }
+            // 기존 값에 새로운 숫자 추가
+            else
+            {
+                InputValue += digit;
+            }
+
+            // 히스토리에 변환 결과 추가
+            AddConversionToHistory();
         }
 
         private void ExecuteClear(object? parameter)
@@ -286,12 +300,6 @@ namespace Calculator.UI.ViewModels
                 }
             }
         }
-
-        private void ExecuteToggleSign(object? parameter)
-        {
-            // Toggle sign functionality if needed
-        }
-
         private void UpdateDigitAvailability()
         {
             IsBinaryDigitEnabled = currentBase >= 2;
