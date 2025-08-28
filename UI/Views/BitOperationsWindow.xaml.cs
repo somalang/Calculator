@@ -1,4 +1,5 @@
 ﻿using Calculator.UI.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,36 +19,42 @@ namespace Calculator.UI.Views
             this.Close();
         }
 
-        private void OperandATextBox_GotFocus(object sender, RoutedEventArgs e)
+        private void OperandA_GotFocus(object sender, RoutedEventArgs e)
         {
-            ViewModel?.HandleOperandAGotFocus();
-
-            // 텍스트 전체 선택 (사용자 편의성)
-            if (sender is TextBox textBox)
+            if (DataContext is BitOperationsViewModel vm)
             {
-                textBox.SelectAll();
+                vm.HandleOperandAGotFocus();
+                Debug.WriteLine($"OperandA got focus, IsOperandAFocused={vm.IsOperandAFocused}");
             }
         }
 
-        private void OperandATextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void OperandA_LostFocus(object sender, RoutedEventArgs e)
         {
-            ViewModel?.HandleOperandALostFocus();
-        }
-
-        private void OperandBTextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            ViewModel?.HandleOperandBGotFocus();
-
-            // 텍스트 전체 선택 (사용자 편의성)
-            if (sender is TextBox textBox)
+            if (DataContext is BitOperationsViewModel vm)
             {
-                textBox.SelectAll();
+                vm.HandleOperandALostFocus();
+                Debug.WriteLine($"OperandA lost focus, IsOperandAFocused={vm.IsOperandAFocused}");
             }
         }
 
-        private void OperandBTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void OperandB_GotFocus(object sender, RoutedEventArgs e)
         {
-            ViewModel?.HandleOperandBLostFocus();
+            if (DataContext is BitOperationsViewModel vm)
+            {
+                vm.HandleOperandBGotFocus();
+                Debug.WriteLine($"OperandB got focus, IsOperandBFocused={vm.IsOperandBFocused}");
+            }
         }
+
+        private void OperandB_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is BitOperationsViewModel vm)
+            {
+                vm.HandleOperandBLostFocus();
+                Debug.WriteLine($"OperandB lost focus, IsOperandBFocused={vm.IsOperandBFocused}");
+            }
+        }
+
     }
+
 }
