@@ -172,7 +172,7 @@ namespace Calculator.Core.Engine
 
         private bool IsOperator(char c)
         {
-            return c == '+' || c == '-' || c == '*' || c == '/';
+            return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
         }
     }
 }
