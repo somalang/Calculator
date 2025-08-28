@@ -389,8 +389,8 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-            CurrentInput += Math.PI.ToString();
-            Display = CurrentInput;
+
+            InsertConstant(Math.PI.ToString());
         }
 
         private void ExecuteE(object? parameter)
@@ -400,9 +400,38 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-            CurrentInput += Math.E.ToString();
-            Display = CurrentInput;
+
+            InsertConstant(Math.E.ToString());
         }
+
+        // 공통 메서드
+        private void InsertConstant(string constant)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentInput))
+            {
+                CurrentInput = constant;
+            }
+            else
+            {
+                var tokens = CurrentInput.Trim().Split(' ');
+                string lastToken = tokens[^1];
+
+                if (decimal.TryParse(lastToken, out _))
+                {
+                    // 마지막이 숫자면 제거
+                    tokens[^1] = constant;
+                    CurrentInput = string.Join(" ", tokens);
+                }
+                else
+                {
+                    CurrentInput += " " + constant;
+                }
+            }
+
+            Display = CurrentInput;
+            isResultDisplayed = true; // 상수 입력 후 결과 상태로 설정
+        }
+
 
         private void ExecuteToggleAngleMode(object? parameter)
         {
