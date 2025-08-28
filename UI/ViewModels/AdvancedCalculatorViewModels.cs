@@ -336,22 +336,25 @@ namespace Calculator.UI.ViewModels
 
         private void ExecuteToggleSign(object? parameter)
         {
-            if (string.IsNullOrEmpty(CurrentInput)) return;
+            if (string.IsNullOrWhiteSpace(CurrentInput)) return;
 
-            var tokens = CurrentInput.Trim().Split(' ');
-            string lastToken = tokens[^1];
+            string trimmed = CurrentInput.Trim();
 
-            if (decimal.TryParse(lastToken, out _))
+            // 전체가 이미 음수로 묶여 있는지 검사: -(수식)
+            if (trimmed.StartsWith("-(") && trimmed.EndsWith(")"))
             {
-                if (lastToken.StartsWith("-"))
-                    tokens[^1] = lastToken.Substring(1);
-                else
-                    tokens[^1] = "-" + lastToken;
-
-                CurrentInput = string.Join(" ", tokens);
-                Display = CurrentInput;
+                // 음수 해제
+                CurrentInput = trimmed.Substring(2, trimmed.Length - 3);
             }
+            else
+            {
+                // 수식 전체를 음수로 감싸기
+                CurrentInput = $"-({trimmed})";
+            }
+            Display = CurrentInput;
         }
+
+
 
         // Function executers
         private void ExecuteRound(object? parameter) => ExecuteFunction("round");
@@ -386,8 +389,8 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-            CurrentInput += Math.PI.ToString();
-            Display = CurrentInput;
+
+            InsertConstant(Math.PI.ToString());
         }
 
         private void ExecuteE(object? parameter)
@@ -397,9 +400,38 @@ namespace Calculator.UI.ViewModels
                 CurrentInput = string.Empty;
                 isResultDisplayed = false;
             }
-            CurrentInput += Math.E.ToString();
-            Display = CurrentInput;
+
+            InsertConstant(Math.E.ToString());
         }
+
+        // 공통 메서드
+        private void InsertConstant(string constant)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentInput))
+            {
+                CurrentInput = constant;
+            }
+            else
+            {
+                var tokens = CurrentInput.Trim().Split(' ');
+                string lastToken = tokens[^1];
+
+                if (decimal.TryParse(lastToken, out _))
+                {
+                    // 마지막이 숫자면 제거
+                    tokens[^1] = constant;
+                    CurrentInput = string.Join(" ", tokens);
+                }
+                else
+                {
+                    CurrentInput += " " + constant;
+                }
+            }
+
+            Display = CurrentInput;
+            isResultDisplayed = true; // 상수 입력 후 결과 상태로 설정
+        }
+
 
         private void ExecuteToggleAngleMode(object? parameter)
         {
@@ -410,9 +442,18 @@ namespace Calculator.UI.ViewModels
         private void ExecuteFunction(string functionName)
         {
             if (string.IsNullOrEmpty(CurrentInput)) return;
-            CurrentInput = $"{functionName}({CurrentInput})";
+
+            if (isResultDisplayed)
+            {
+                isResultDisplayed = false;
+            }
+
+            // 숫자 주위에 함수 씌우기
+            string expr = $"{functionName}({CurrentInput.Replace(" ", "")})";
+            CurrentInput = expr;
             Display = CurrentInput;
         }
+
 
         private void ExecuteUnaryOperation(Func<CalcValue, CalcValue> operation, string operatorSymbol)
         {
