@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Engine;
+using Calculator.Core.Engine;
 using Calculator.Core.Models;
 using Calculator.Core.Services;
 using Calculator.UI.Views;
@@ -59,6 +59,8 @@ namespace Calculator.UI.ViewModels
 
         // HistoryService의 Items를 직접 노출
         // 명령들
+        public ICommand? OpenMenuCommand { get; }
+
         public ICommand? NumberCommand { get; private set; }
         public ICommand? OperatorCommand { get; private set; }
         public ICommand? EqualsCommand { get; private set; }
@@ -92,6 +94,8 @@ namespace Calculator.UI.ViewModels
             isResultDisplayed = false;
 
             InitializeCommands();
+            OpenMenuCommand = new RelayCommand(OpenMenu);
+
             CloseCommand = new RelayCommand(CloseWindow);
         }
 
@@ -126,7 +130,16 @@ namespace Calculator.UI.ViewModels
                 .FirstOrDefault(w => w.DataContext == this)
                 ?.Close();
         }
+        private void OpenMenu(object? parameter)
+        {
+            if (parameter is Window currentWindow)
+            {
+                var menuWindow = new MenuWindow();
+                menuWindow.Show();
 
+                currentWindow.Close();
+            }
+        }
         private void ExecuteNumber(object? parameter)
         {
             string? number = parameter?.ToString();
