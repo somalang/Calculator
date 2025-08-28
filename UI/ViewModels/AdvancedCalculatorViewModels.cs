@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Engine;
+using Calculator.Core.Engine;
 using Calculator.Core.Models;
 using Calculator.Core.Services;
 using Calculator.UI.Views;
@@ -56,6 +56,8 @@ namespace Calculator.UI.ViewModels
             }
         }
         public ICommand? OpenMenuCommand { get; }
+        public ICommand? CloseCommand { get; }
+
 
         // Commands (기존 코드와 동일)
         public ICommand? NumberCommand { get; private set; }
@@ -117,7 +119,7 @@ namespace Calculator.UI.ViewModels
             historyProvider = App.HistoryService ?? new HistoryService();
 
             InitializeCommands();
-            OpenMenuCommand = new RelayCommand(OpenMenu);
+            CloseCommand = new RelayCommand(CloseWindow);
         }
 
         // 생성자 오버로드 - 의존성 주입을 위해
@@ -184,7 +186,14 @@ namespace Calculator.UI.ViewModels
             ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
             ClearHistoryCommand = new RelayCommand(ExecuteClearHistory);
         }
-
+        private void CloseWindow(object? parameter)
+        {
+            // 현재 열려 있는 창을 닫음
+            Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)
+                ?.Close();
+        }
         private void OpenMenu(object? parameter)
         {
             if (parameter is Window currentWindow)
