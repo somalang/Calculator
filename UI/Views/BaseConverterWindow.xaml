@@ -185,7 +185,7 @@
 
                 <!-- Input Display -->
                 <TextBox Text="{Binding InputValue, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource InputTextBoxStyle}"
+                         Style="{StaticResource InputTextBoxStyle }"
                          IsReadOnly="False" />
             </StackPanel>
         </GroupBox>
@@ -324,7 +324,7 @@
 
         <!-- Close Button -->
         <Button Grid.Row="4" Content="Close" 
-                Click="CloseButton_Click"
+                Command="{Binding CloseCommand}"
                 Height="35" Width="100" Margin="0,15,0,0"
                 HorizontalAlignment="Right"
                 Background="#4A90E2" Foreground="White"
