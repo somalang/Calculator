@@ -1,4 +1,4 @@
-﻿using Calculator.UI.Views;
+using Calculator.UI.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -9,7 +9,7 @@ namespace Calculator.UI.ViewModels
     public class MenuViewModel : INotifyPropertyChanged
     {
         private readonly Window owner;
-
+        public ICommand? CloseCommand { get; }
         public ICommand StandardCalculatorCommand { get; }
         public ICommand AdvancedCalculatorCommand { get; }
         public ICommand BaseConverterCommand { get; }
@@ -23,6 +23,8 @@ namespace Calculator.UI.ViewModels
             AdvancedCalculatorCommand = new RelayCommand(ExecuteAdvancedCalculator);
             BaseConverterCommand = new RelayCommand(ExecuteBaseConverter);
             BitOperationsCommand = new RelayCommand(ExecuteBitOperations);
+            CloseCommand = new RelayCommand(ExecuteClose);
+
         }
 
         private void ExecuteStandardCalculator(object? parameter)
@@ -69,6 +71,13 @@ namespace Calculator.UI.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        private void ExecuteClose(object? parameter)
+        {
+            var window = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+            window?.Close();
         }
     }
 }
