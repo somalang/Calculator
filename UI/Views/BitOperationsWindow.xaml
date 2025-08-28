@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Calculator.UI.ViewModels"
 
-        Title="Bit Operations Calculator"
-        Height="927"
+        Title="64-Bit Operations Calculator"
+        Height="1000"
         Width="842"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
-        MinHeight="500"
-        MinWidth="450"
+        MinHeight="600"
+        MinWidth="500"
         Background="White">
 
     <Window.DataContext>
@@ -18,13 +18,13 @@
 
     <Window.Resources>
         <Style x:Key="BaseButtonStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Margin" Value="3" />
+            <Setter Property="Margin" Value="2" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="#D0D0D0" />
             <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Height" Value="35" />
+            <Setter Property="Height" Value="32" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -50,12 +50,32 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="AdvancedOperationButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#9B59B6" />
+            <Setter Property="Foreground" Value="White" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#8E44AD" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="FunctionButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
             <Setter Property="Background" Value="#E8F4FD" />
             <Setter Property="Foreground" Value="#2E7D32" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#D1E7DD" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ClearButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#FF6B6B" />
+            <Setter Property="Foreground" Value="White" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF5252" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -84,7 +104,6 @@
             <Setter Property="Background" Value="White" />
             <Setter Property="TextAlignment" Value="Right" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <!-- 기존 35 → 50으로 변경 -->
             <Setter Property="Height" Value="50" />
         </Style>
 
@@ -92,6 +111,7 @@
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -116,7 +136,7 @@
                 <Ellipse Width="8" Height="8" Fill="#D0D0D0" Margin="3,0" />
             </StackPanel>
         </Button>
-        <TextBlock Grid.Row="0" Text="Bit Operations Calculator" 
+        <TextBlock Grid.Row="0" Text="64-Bit Operations Calculator" 
                    FontSize="18" FontWeight="SemiBold" 
                    HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
@@ -131,6 +151,7 @@
                 </Canvas>
             </Viewbox>
         </Button>
+
         <!-- Current Operation Display -->
         <Border Grid.Row="1" Background="#2C2C2C" CornerRadius="6" Padding="10" Margin="0,0,0,10">
             <TextBlock Text="{Binding CurrentOperation, StringFormat='Current Operation: {0}'}" 
@@ -144,10 +165,12 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -163,14 +186,19 @@
                          GotFocus="OperandA_GotFocus"
                          LostFocus="OperandA_LostFocus" />
 
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="BIN:" FontWeight="SemiBold" 
-                           VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding OperandABinary, Mode=OneWay}"
+                <Button Grid.Row="0" Grid.Column="2" Content="Clear A" 
+                        Command="{Binding ClearACommand}"
+                        Style="{StaticResource ClearButtonStyle}" 
+                        Width="60" Margin="5,0,5,0" />
+
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="BIN:" FontWeight="SemiBold" 
+                           VerticalAlignment="Center" Width="35" Margin="5,0,5,0" />
+                <TextBox Grid.Row="0" Grid.Column="4" Text="{Binding OperandABinary, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
-                <TextBlock Grid.Row="0" Grid.Column="4" Text="HEX:" FontWeight="SemiBold" 
+                <TextBlock Grid.Row="0" Grid.Column="5" Text="HEX:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding OperandAHex, Mode=OneWay}"
+                <TextBox Grid.Row="0" Grid.Column="6" Text="{Binding OperandAHex, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
                 <!-- Operand B -->
@@ -182,20 +210,31 @@
                          GotFocus="OperandB_GotFocus"
                          LostFocus="OperandB_LostFocus"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="BIN:" FontWeight="SemiBold" 
-                           VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding OperandBBinary, Mode=OneWay}"
+                <Button Grid.Row="1" Grid.Column="2" Content="Clear B" 
+                        Command="{Binding ClearBCommand}"
+                        Style="{StaticResource ClearButtonStyle}" 
+                        Width="60" Margin="5,0,5,0" />
+
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="BIN:" FontWeight="SemiBold" 
+                           VerticalAlignment="Center" Width="35" Margin="5,0,5,0" />
+                <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding OperandBBinary, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
 
-                <TextBlock Grid.Row="1" Grid.Column="4" Text="HEX:" FontWeight="SemiBold" 
+                <TextBlock Grid.Row="1" Grid.Column="5" Text="HEX:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="35" Margin="10,0,5,0" />
-                <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding OperandBHex, Mode=OneWay}"
+                <TextBox Grid.Row="1" Grid.Column="6" Text="{Binding OperandBHex, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
+
+                <!-- Swap Button Row -->
+                <Button Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" 
+                        Content="Swap A ↔ B" Command="{Binding SwapCommand}"
+                        Style="{StaticResource FunctionButtonStyle}" 
+                        Margin="0,10,0,0" Height="30" />
             </Grid>
         </GroupBox>
 
-        <!-- Operations Section -->
-        <GroupBox Grid.Row="3" Header="Operations" Padding="10" Margin="0,0,0,10">
+        <!-- Basic Operations Section -->
+        <GroupBox Grid.Row="3" Header="Basic Operations" Padding="10" Margin="0,0,0,10">
             <UniformGrid Rows="2" Columns="4">
                 <Button Content="AND (A &amp; B)" Command="{Binding AndCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
@@ -206,19 +245,29 @@
                 <Button Content="NOT A (~A)" Command="{Binding NotACommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
 
+                <Button Content="NAND (~(A &amp; B))" Command="{Binding NandCommand}" 
+                        Style="{StaticResource AdvancedOperationButtonStyle}" />
+                <Button Content="NOR (~(A | B))" Command="{Binding NorCommand}" 
+                        Style="{StaticResource AdvancedOperationButtonStyle}" />
+                <Button Content="NXOR (~(A ^ B))" Command="{Binding NxorCommand}" 
+                        Style="{StaticResource AdvancedOperationButtonStyle}" />
                 <Button Content="NOT B (~B)" Command="{Binding NotBCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
+            </UniformGrid>
+        </GroupBox>
+
+        <!-- Shift Operations Section -->
+        <GroupBox Grid.Row="4" Header="Shift Operations" Padding="10" Margin="0,0,0,10">
+            <UniformGrid Rows="1" Columns="2">
                 <Button Content="Left Shift (A &lt;&lt; B)" Command="{Binding LeftShiftCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
                 <Button Content="Right Shift (A >> B)" Command="{Binding RightShiftCommand}" 
                         Style="{StaticResource OperationButtonStyle}" />
-                <Button Content="Swap A &#8596; B" Command="{Binding SwapCommand}"
-                        Style="{StaticResource FunctionButtonStyle}" />
             </UniformGrid>
         </GroupBox>
 
         <!-- Result Section -->
-        <GroupBox Grid.Row="4" Header="Result" Padding="10" Margin="0,0,0,10">
+        <GroupBox Grid.Row="5" Header="Result" Padding="10" Margin="0,0,0,10">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -254,7 +303,7 @@
         </GroupBox>
 
         <!-- Number Pad Section -->
-        <GroupBox Grid.Row="5" Header="Number Pad" Padding="10" Margin="0,0,0,10">
+        <GroupBox Grid.Row="6" Header="Number Pad" Padding="10" Margin="0,0,0,10">
             <UniformGrid Rows="4" Columns="3">
                 <!-- Row 1 -->
                 <Button Content="7" Command="{Binding NumberCommand}" CommandParameter="7" Style="{StaticResource FunctionButtonStyle}" Focusable="False"/>
@@ -279,9 +328,9 @@
         </GroupBox>
 
         <!-- Control Buttons -->
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Clear All" Command="{Binding ClearCommand}" 
-            Style="{StaticResource FunctionButtonStyle}" Width="100" Margin="0,0,10,0" />
+            Style="{StaticResource ClearButtonStyle}" Width="100" Margin="0,0,10,0" />
             <Button Content="Close" Click="CloseButton_Click" 
             Style="{StaticResource OperationButtonStyle}" Width="100" />
         </StackPanel>
