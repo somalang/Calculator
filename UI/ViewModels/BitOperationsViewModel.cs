@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Models;
+using Calculator.Core.Models;
 using Calculator.Core.Services; // IHistoryProvider 사용
 using Calculator.UI.Views;
 using System;
@@ -122,6 +122,7 @@ namespace Calculator.UI.ViewModels
         }
 
         // Commands
+        public ICommand? CloseCommand { get; }
         public ICommand? OpenMenuCommand { get; }
         public ICommand? AndCommand { get; private set; }
         public ICommand? OrCommand { get; private set; }
@@ -148,7 +149,7 @@ namespace Calculator.UI.ViewModels
         {
             historyProvider = App.HistoryService ?? new HistoryService();
             InitializeCommands();
-            OpenMenuCommand = new RelayCommand(OpenMenu);
+            CloseCommand = new RelayCommand(CloseWindow);
         }
 
         private void InitializeCommands()
@@ -222,7 +223,14 @@ namespace Calculator.UI.ViewModels
                 OperandBInput = "0";
             }
         }
-
+        private void CloseWindow(object? parameter)
+        {
+            // 현재 열려 있는 창을 닫음
+            Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)
+                ?.Close();
+        }
         private void ExecuteNumber(object? parameter)
         {
             var digit = parameter?.ToString();
