@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 
 namespace Calculator.UI.Views
 {
@@ -8,13 +8,6 @@ namespace Calculator.UI.Views
         {
             InitializeComponent();
         }
-        private void MenuButton_Click(object sender, RoutedEventArgs e)
-        {
-            MenuWindow menuWindow = new MenuWindow();
-            menuWindow.Show();
-            this.Close(); // 현재 창 닫기
-        }
-
         private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
 
