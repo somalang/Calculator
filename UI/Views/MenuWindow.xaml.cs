@@ -1,4 +1,4 @@
-﻿// MenuWindow.xaml.cs
+// MenuWindow.xaml.cs
 using Calculator.UI.ViewModels;
 using System.Windows;
 
@@ -12,9 +12,5 @@ namespace Calculator.UI.Views
             DataContext = new MenuViewModel(this);
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
     }
 }
