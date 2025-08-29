@@ -1,4 +1,5 @@
-﻿// Calculator.Core/Services/IHistoryProvider.cs
+﻿// 히스토리 인터페이스
+
 using System.Collections.ObjectModel;
 using Calculator.Core.Models;
 

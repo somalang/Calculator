@@ -1,4 +1,6 @@
-﻿using Calculator.Core.Models;
+﻿// 토큰 리스트를 실제로 계산하여 결과를 반환 - 핵심 계산 엔진
+
+using Calculator.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
