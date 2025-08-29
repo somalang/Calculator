@@ -31,17 +31,25 @@ namespace Calculator.UI.ViewModels
             get => operandAInput;
             set
             {
-                if (IsValidNumericInput(value))
+                if (string.IsNullOrEmpty(value))
                 {
-                    operandAInput = value ?? ""; // 빈 문자열 허용
-                    OnPropertyChanged();
+                    operandAInput = "";
+                }
+                else if (value.Length > 10)
+                {
+                    // 경고 문구 표시
+                    operandAInput = "10자 초과";
+                }
+                else if (IsValidNumericInput(value))
+                {
+                    operandAInput = value;
                     UpdateOperandA();
                     UpdateResults();
                 }
-                else
-                {
-                    // 잘못된 입력은 무시 (기존 값 유지)
-                }
+                // else 잘못된 입력 무시
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(OperandAFontSize));
             }
         }
 
@@ -50,19 +58,35 @@ namespace Calculator.UI.ViewModels
             get => operandBInput;
             set
             {
-                if (IsValidNumericInput(value))
+                if (string.IsNullOrEmpty(value))
                 {
-                    operandBInput = value ?? "";
-                    OnPropertyChanged();
+                    operandBInput = "";
+                }
+                else if (value.Length > 10)
+                {
+                    operandBInput = "10자 초과";
+                }
+                else if (IsValidNumericInput(value))
+                {
+                    operandBInput = value;
                     UpdateOperandB();
                     UpdateResults();
                 }
-                else
-                {
-                    // 잘못된 입력은 무시
-                }
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(OperandBFontSize));
             }
         }
+
+        // 동적으로 FontSize 조절
+        public double OperandAFontSize =>
+            string.IsNullOrEmpty(operandAInput) ? 20 :
+            (operandAInput.Length > 20 ? 15 : 20);
+
+        public double OperandBFontSize =>
+            string.IsNullOrEmpty(operandBInput) ? 20 :
+            (operandBInput.Length > 20 ? 15 : 20);
+
 
         /// <summary>
         /// 숫자 또는 음수(-)만 허용
@@ -189,7 +213,7 @@ namespace Calculator.UI.ViewModels
             return binary.PadLeft(targetLength, '0');
         }
 
-        // Focus 처리 메서드들 (코드비하인드에서 호출용)
+        // Focus 처리 메서드들
         public void HandleOperandAGotFocus()
         {
             IsOperandAFocused = true;
@@ -492,7 +516,6 @@ namespace Calculator.UI.ViewModels
             }
             UpdateResultOutputs();
         }
-
 
         private void UpdateResultOutputs()
         {

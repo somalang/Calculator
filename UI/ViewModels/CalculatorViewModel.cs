@@ -26,13 +26,76 @@ namespace Calculator.UI.ViewModels
         public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
 
         // 속성
+        public string DisplayTrimmed
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(display))
+                    return "0";
+
+                if (display.Length <= 30)
+                    return display;
+
+                return display.Substring(0, 20) + "...";
+            }
+        }
+
+        private double displayFontSize = 32;
+        public double DisplayFontSize
+        {
+            get => displayFontSize;
+            private set
+            {
+                displayFontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // Display 속성 setter 수정
         public string Display
         {
             get => display;
             set
             {
-                display = value;
+                if (!string.IsNullOrEmpty(value) && value.Length > 20)
+                {
+                    display = "너무 길어서 입력 불가";
+                    CurrentInput = string.Empty; // 입력 초기화
+                }
+                else
+                {
+                    display = value;
+                }
+
+                UpdateDisplayFontSize();
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayTrimmed));
+            }
+        }
+
+        private void UpdateDisplayFontSize()
+        {
+            if (string.IsNullOrEmpty(display))
+            {
+                DisplayFontSize = 32;
+                return;
+            }
+
+            int length = display.Length;
+
+            if (length <= 7)
+            {
+                DisplayFontSize = 32; // 기본 크기
+            }
+            else if (length <= 20)
+            {
+                // 7~20 글자 구간 → 선형으로 줄이기 (32 → 19)
+                double factor = (double)(length - 7) / (20 - 7);
+                DisplayFontSize = 32 - (13 * factor); // 32 → 19 (차이 13)
+            }
+            else
+            {
+                DisplayFontSize = 19; // 최소 크기
             }
         }
 
@@ -56,8 +119,6 @@ namespace Calculator.UI.ViewModels
             historyProvider.Clear();
         }
 
-
-        // HistoryService의 Items를 직접 노출
         // 명령들
         public ICommand? OpenMenuCommand { get; private set; }
 
@@ -95,7 +156,6 @@ namespace Calculator.UI.ViewModels
 
             InitializeCommands();
             OpenMenuCommand = new RelayCommand(OpenMenu);
-
             CloseCommand = new RelayCommand(CloseWindow);
         }
 
@@ -190,36 +250,36 @@ namespace Calculator.UI.ViewModels
                 HandleCalculationResult(result, expression);
             }
             catch (InvalidOperationException ex)
-{
-    if (ex.InnerException != null)
-    {
-        if (ex.InnerException is DivideByZeroException)
-        {
-            Display = "0으로 나눌 수 없습니다";
-        }
-        else if (ex.InnerException is OverflowException)
-        {
-            Display = "오버플로우 발생";
-        }
-        else
-        {
-            Display = "계산 오류";
-        }
-    }
-    else
-    {
-        // InnerException 없으면 메시지에 의존
-        if (ex.Message.Contains("0으로 나눌 수 없습니다"))
-            Display = "0으로 나눌 수 없습니다";
-        else if (ex.Message.Contains("오버플로우"))
-            Display = "오버플로우 발생";
-        else
-            Display = "계산 오류";
-    }
+            {
+                if (ex.InnerException != null)
+                {
+                    if (ex.InnerException is DivideByZeroException)
+                    {
+                        Display = "0으로 나눌 수 없습니다";
+                    }
+                    else if (ex.InnerException is OverflowException)
+                    {
+                        Display = "오버플로우 발생";
+                    }
+                    else
+                    {
+                        Display = "계산 오류";
+                    }
+                }
+                else
+                {
+                    // InnerException 없으면 메시지에 의존
+                    if (ex.Message.Contains("0으로 나눌 수 없습니다"))
+                        Display = "0으로 나눌 수 없습니다";
+                    else if (ex.Message.Contains("오버플로우"))
+                        Display = "오버플로우 발생";
+                    else
+                        Display = "계산 오류";
+                }
 
-    CurrentInput = string.Empty;
-    isResultDisplayed = true;
-}
+                CurrentInput = string.Empty;
+                isResultDisplayed = true;
+            }
 
 
         }
@@ -386,7 +446,7 @@ namespace Calculator.UI.ViewModels
 
                 if (!string.IsNullOrWhiteSpace(clipboardText))
                 {
-                    // ✅ 숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
+                    //숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
                     string filtered = System.Text.RegularExpressions.Regex.Replace(
                         clipboardText, @"[^0-9+\-*/().\s]", string.Empty);
 

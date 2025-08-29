@@ -9,7 +9,7 @@ namespace Calculator.UI.Views
         public HistoryWindow()
         {
             InitializeComponent();
-            // DataContext는 외부에서 설정됩니다.
+            // DataContext는 외부에서 설정
         }
 
         public HistoryWindow(IHistoryProvider provider)

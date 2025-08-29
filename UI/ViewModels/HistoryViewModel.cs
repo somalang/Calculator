@@ -54,7 +54,6 @@ namespace Calculator.UI.ViewModels
             }
         }
 
-
         private void ExecuteDeleteSelected(object? parameter)
         {
             if (SelectedHistoryItem != null)

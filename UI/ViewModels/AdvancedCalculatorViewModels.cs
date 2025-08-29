@@ -25,13 +25,75 @@ namespace Calculator.UI.ViewModels
         private readonly IHistoryProvider historyProvider;
 
         public ObservableCollection<HistoryItem> HistoryItems => historyProvider.Items;
-
         public string Display
         {
             get => display;
             set
             {
-                display = value;
+                if (!string.IsNullOrEmpty(value) && value.Length > 20)
+                {
+                    display = "너무 길어서 입력을 받을 수 없습니다";
+                    CurrentInput = string.Empty; // 입력 초기화
+                }
+                else
+                {
+                    display = value;
+                }
+
+                UpdateDisplayFontSize();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayTrimmed));
+            }
+        }
+
+
+        private void UpdateDisplayFontSize()
+        {
+            if (string.IsNullOrEmpty(display))
+            {
+                DisplayFontSize = 32;
+                return;
+            }
+
+            int length = display.Length;
+
+            if (length <= 7)
+            {
+                DisplayFontSize = 32; // 기본 크기
+            }
+            else if (length <= 20)
+            {
+                // 7~20 글자 구간 → 선형으로 줄이기 (32 → 19)
+                double factor = (double)(length - 7) / (20 - 7);
+                DisplayFontSize = 32 - (13 * factor); // 32 → 19 (차이 13)
+            }
+            else
+            {
+                DisplayFontSize = 19; // 최소 크기
+            }
+        }
+
+        public string DisplayTrimmed
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(display))
+                    return "0";
+
+                if (display.Length <= 30)
+                    return display;
+
+                return display.Substring(0, 20) + "...";
+            }
+        }
+
+        private double displayFontSize = 32;
+        public double DisplayFontSize
+        {
+            get => displayFontSize;
+            private set
+            {
+                displayFontSize = value;
                 OnPropertyChanged();
             }
         }
@@ -395,7 +457,7 @@ namespace Calculator.UI.ViewModels
 
                 if (!string.IsNullOrWhiteSpace(clipboardText))
                 {
-                    // ✅ 숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
+                    //숫자, 연산자, 괄호, 소수점, 공백만 남기고 나머지는 제거
                     string filtered = System.Text.RegularExpressions.Regex.Replace(
                         clipboardText, @"[^0-9+\-*/().\s]", string.Empty);
 
@@ -435,33 +497,6 @@ namespace Calculator.UI.ViewModels
                 HandleKeyPress(directKey);
             }
         }
-        private void HandleCalculationResult(CalcValue result, string expression = "")
-        {
-            double value = (double)result.Value; // decimal → double 변환
-
-            if (double.IsNaN(value))
-            {
-                Display = "결과가 유효하지 않습니다 (NaN)";
-                CurrentInput = string.Empty;
-                isResultDisplayed = true;
-                return;
-            }
-            if (double.IsInfinity(value))
-            {
-                Display = "∞ (무한대)";
-                CurrentInput = string.Empty;
-                isResultDisplayed = true;
-                return;
-            }
-
-            Display = result.ToString();
-            CurrentInput = Display;
-            isResultDisplayed = true;
-
-            if (!string.IsNullOrEmpty(expression))
-                historyProvider.Add(expression, result);
-        }
-
 
         private void HandleKeyPress(Key key)
         {

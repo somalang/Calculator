@@ -181,17 +181,18 @@
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="A:" FontWeight="SemiBold" 
                            VerticalAlignment="Center" Width="25" />
                 <TextBox x:Name="OperandATextBox" Grid.Row="0" Grid.Column="1" 
-                         Text="{Binding OperandAInput, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource InputTextBoxStyle}"
-                         GotFocus="OperandA_GotFocus"
-                         LostFocus="OperandA_LostFocus" />
+                        Text="{Binding OperandAInput, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="{Binding OperandAFontSize}"
+                        Style="{StaticResource InputTextBoxStyle}"
+                        GotFocus="OperandA_GotFocus"
+                        LostFocus="OperandA_LostFocus" />  
 
                 <Button Grid.Row="0" Grid.Column="2" Content="Clear A" 
                         Command="{Binding ClearACommand}"
                         Style="{StaticResource ClearButtonStyle}" 
                         Width="60" Margin="5,0,5,0" />
 
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="BIN:" FontWeight="SemiBold" 
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="BIN:" FontWeight="SemiBold"
                            VerticalAlignment="Center" Width="35" Margin="5,0,5,0" />
                 <TextBox Grid.Row="0" Grid.Column="4" Text="{Binding OperandABinary, Mode=OneWay}"
                          Style="{StaticResource DisplayTextBoxStyle}" />
@@ -203,12 +204,13 @@
 
                 <!-- Operand B -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="B:" FontWeight="SemiBold" 
-                           VerticalAlignment="Center" Width="25" />
+                        VerticalAlignment="Center" Width="25" />
                 <TextBox x:Name="OperandBTextBox" Grid.Row="1" Grid.Column="1" 
-                         Text="{Binding OperandBInput, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource InputTextBoxStyle}"
-                         GotFocus="OperandB_GotFocus"
-                         LostFocus="OperandB_LostFocus"/>
+                        Text="{Binding OperandBInput, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="{Binding OperandBFontSize}"
+                        Style="{StaticResource InputTextBoxStyle}"
+                        GotFocus="OperandB_GotFocus"
+                        LostFocus="OperandB_LostFocus"/>
 
                 <Button Grid.Row="1" Grid.Column="2" Content="Clear B" 
                         Command="{Binding ClearBCommand}"
