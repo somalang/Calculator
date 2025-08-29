@@ -1,4 +1,6 @@
-﻿using Calculator.Core.Models;
+//실제 수식 평가 및 유효성 검사 
+
+using Calculator.Core.Models;
 using System;
 
 namespace Calculator.Core.Engine
