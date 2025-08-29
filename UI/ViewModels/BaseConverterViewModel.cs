@@ -206,7 +206,7 @@ namespace Calculator.UI.ViewModels
         public ICommand? BackspaceCommand { get; private set; }
         public ICommand? CopyCommand { get; private set; }
         public ICommand? PasteCommand { get; private set; }
-        public ICommand? OpenMenuCommand { get; }
+        public ICommand? OpenMenuCommand { get; private set; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
         public ICommand? ToggleSignCommand { get; private set; }
@@ -239,11 +239,14 @@ namespace Calculator.UI.ViewModels
 
         private void OpenMenu(object? parameter)
         {
-            if (parameter is Window currentWindow)
+            var currentWindow = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+
+            if (currentWindow != null)
             {
                 var menuWindow = new MenuWindow();
                 menuWindow.Show();
-
                 currentWindow.Close();
             }
         }

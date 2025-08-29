@@ -59,7 +59,7 @@ namespace Calculator.UI.ViewModels
 
         // HistoryService의 Items를 직접 노출
         // 명령들
-        public ICommand? OpenMenuCommand { get; }
+        public ICommand? OpenMenuCommand { get; private set; }
 
         public ICommand? NumberCommand { get; private set; }
         public ICommand? OperatorCommand { get; private set; }
@@ -132,14 +132,18 @@ namespace Calculator.UI.ViewModels
         }
         private void OpenMenu(object? parameter)
         {
-            if (parameter is Window currentWindow)
+            var currentWindow = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+
+            if (currentWindow != null)
             {
                 var menuWindow = new MenuWindow();
                 menuWindow.Show();
-
                 currentWindow.Close();
             }
         }
+
         private void ExecuteNumber(object? parameter)
         {
             string? number = parameter?.ToString();

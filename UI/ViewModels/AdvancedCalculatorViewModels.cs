@@ -55,7 +55,7 @@ namespace Calculator.UI.ViewModels
                 OnPropertyChanged();
             }
         }
-        public ICommand? OpenMenuCommand { get; }
+        public ICommand? OpenMenuCommand { get; private set; }
         public ICommand? CloseCommand { get; }
 
 
@@ -120,6 +120,8 @@ namespace Calculator.UI.ViewModels
 
             InitializeCommands();
             CloseCommand = new RelayCommand(CloseWindow);
+            OpenMenuCommand = new RelayCommand(OpenMenu);
+
         }
 
         // 생성자 오버로드 - 의존성 주입을 위해
@@ -196,11 +198,14 @@ namespace Calculator.UI.ViewModels
         }
         private void OpenMenu(object? parameter)
         {
-            if (parameter is Window currentWindow)
+            var currentWindow = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+
+            if (currentWindow != null)
             {
                 var menuWindow = new MenuWindow();
                 menuWindow.Show();
-
                 currentWindow.Close();
             }
         }

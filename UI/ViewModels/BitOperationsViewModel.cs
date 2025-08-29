@@ -123,7 +123,7 @@ namespace Calculator.UI.ViewModels
 
         // Commands
         public ICommand? CloseCommand { get; }
-        public ICommand? OpenMenuCommand { get; }
+        public ICommand? OpenMenuCommand { get; private set; }
         public ICommand? AndCommand { get; private set; }
         public ICommand? OrCommand { get; private set; }
         public ICommand? XorCommand { get; private set; }
@@ -150,6 +150,8 @@ namespace Calculator.UI.ViewModels
             historyProvider = App.HistoryService ?? new HistoryService();
             InitializeCommands();
             CloseCommand = new RelayCommand(CloseWindow);
+            OpenMenuCommand = new RelayCommand(OpenMenu);
+
         }
 
         private void InitializeCommands()
@@ -418,14 +420,18 @@ namespace Calculator.UI.ViewModels
 
         private void OpenMenu(object? parameter)
         {
-            if (parameter is Window currentWindow)
+            var currentWindow = Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this);
+
+            if (currentWindow != null)
             {
                 var menuWindow = new MenuWindow();
                 menuWindow.Show();
-
                 currentWindow.Close();
             }
         }
+
 
         private void UpdateOperandA()
         {
