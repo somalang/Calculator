@@ -128,7 +128,6 @@
 		<!-- Header -->
 		<Button
             Command="{Binding OpenMenuCommand}"
-            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
             Style="{StaticResource FunctionButtonStyle}"
             Background="Transparent"
             BorderThickness="0"
