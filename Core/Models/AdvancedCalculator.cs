@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Models;
+using Calculator.Core.Models;
 using System;
 
 namespace Calculator.Core.Engine
@@ -19,9 +19,6 @@ namespace Calculator.Core.Engine
             {
                 if (!ValidateExpression(expression))
                     throw new ArgumentException("잘못된 수식 입력");
-
-                // 고급 함수들을 처리하기 위해 전처리
-                expression = PreprocessAdvancedFunctions(expression);
 
                 var tokens = parser.Tokenize(expression);
                 var rpnTokens = parser.Parse(tokens);
@@ -54,14 +51,6 @@ namespace Calculator.Core.Engine
             }
 
             return parenthesesCount == 0;
-        }
-
-        private string PreprocessAdvancedFunctions(string expression)
-        {
-            // 고급 함수들을 기본 연산으로 변환하거나 특별 처리
-            // 이 부분은 실제로는 Parser와 Evaluator에서 처리되어야 하지만
-            // 여기서는 간단한 전처리만 수행
-            return expression;
         }
 
         // 라운딩 함수들
