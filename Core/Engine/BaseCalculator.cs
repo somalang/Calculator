@@ -1,3 +1,5 @@
+// 계산 기능의 기본 골격
+
 using System;
 using Calculator.Core.Models;
 
