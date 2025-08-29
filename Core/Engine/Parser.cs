@@ -1,4 +1,4 @@
-﻿//수식 토큰화 및 후위 표기법으로 변환
+//수식 토큰화 및 후위 표기법으로 변환
 
 using Calculator.Core.Models;
 using System;

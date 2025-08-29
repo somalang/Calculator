@@ -1,4 +1,4 @@
-﻿using Calculator.Core.Models;
+using Calculator.Core.Models;
 using System;
 
 namespace Calculator.Core.Engine
