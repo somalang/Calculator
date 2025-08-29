@@ -159,19 +159,17 @@
                 Background="#2C2C2C"
                 CornerRadius="8"
                 Margin="0,0,0,15">
-			<TextBox Text="{Binding Display, Mode=OneWay}"
-                     FontSize="28"
-                     FontWeight="Normal"
-                     Foreground="White"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     IsReadOnly="True"
-                     Focusable="False"
-                     TextAlignment="Right"
-                     VerticalAlignment="Center"
-                     HorizontalAlignment="Stretch"
-                     Padding="15,0" />
-		</Border>
+            <TextBlock Text="{Binding DisplayTrimmed}"
+           FontSize="{Binding DisplayFontSize}"
+           Foreground="White"
+           Background="Transparent"
+           TextAlignment="Right"
+           VerticalAlignment="Center"
+           Padding="15,0"
+           TextTrimming="CharacterEllipsis"
+           TextWrapping="NoWrap" />
+
+        </Border>
 
 		<!-- Buttons -->
 		<UniformGrid Grid.Row="2" Rows="9" Columns="5">

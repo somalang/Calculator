@@ -17,6 +17,7 @@ namespace Calculator.UI.ViewModels
         private int currentBase = 10;
         private long decimalValue = 0;
         private string display = string.Empty;
+        private double displayFontSize = 32;
 
         private HistoryWindow? historyWindow;
 
@@ -30,13 +31,17 @@ namespace Calculator.UI.ViewModels
             get => inputValue;
             set
             {
-                // 들어온 값이 유효하지 않으면 아무것도 하지 않고 즉시 종료합니다.
                 if (!IsValidInput(value))
+                    return;
+
+                if (!string.IsNullOrEmpty(value) && value.Length > 20)
                 {
+                    // TextBox에 바로 메시지 표시
+                    inputValue = "너무 길어서 입력을 받을 수 없습니다";
+                    Display = inputValue; // Display도 동기화
                     return;
                 }
 
-                // 유효한 값일 경우에만 아래 로직을 실행합니다.
                 string? newInputValue = value;
                 if (inputValue == "0" && !string.IsNullOrEmpty(newInputValue) && newInputValue != "0")
                 {
@@ -47,28 +52,86 @@ namespace Calculator.UI.ViewModels
                     inputValue = newInputValue ?? "0";
                 }
 
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(InputValue));
                 UpdateDecimalValue();
                 UpdateOutputs();
+
+                Display = inputValue;
             }
         }
 
+
         private bool IsValidInput(string? input)
         {
-            if (string.IsNullOrEmpty(input)) return true; // 빈 입력은 유효한 것으로 처리
+            if (string.IsNullOrEmpty(input))
+                return true; // 빈 입력은 유효
 
-            // 허용되지 않는 문자가 포함되어 있으면 false를 반환합니다.
+            // 0-9, a-f, A-F 외의 문자가 포함되면 false
             return !System.Text.RegularExpressions.Regex.IsMatch(input, @"[^0-9a-fA-F]");
         }
+
         public string Display
         {
             get => display;
             set
             {
                 display = value;
+                UpdateDisplayFontSize();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayTrimmed));
+            }
+        }
+
+        public string DisplayTrimmed
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(display))
+                    return "0";
+
+                if (display.Length <= 20)
+                    return display;
+
+                return "너무 길어서 입력을 받을 수 없습니다";
+            }
+        }
+
+        public double DisplayFontSize
+        {
+            get => displayFontSize;
+            private set
+            {
+                displayFontSize = value;
                 OnPropertyChanged();
             }
         }
+
+        private void UpdateDisplayFontSize()
+        {
+            if (string.IsNullOrEmpty(display))
+            {
+                DisplayFontSize = 32;
+                return;
+            }
+
+            int length = display.Length;
+
+            if (length <= 7)
+            {
+                DisplayFontSize = 32; // 기본 크기
+            }
+            else if (length <= 20)
+            {
+                // 7~20 글자 구간 → 선형으로 줄이기 (32 → 19)
+                double factor = (double)(length - 7) / (20 - 7);
+                DisplayFontSize = 32 - (13 * factor);
+            }
+            else
+            {
+                DisplayFontSize = 19; // 최소 크기
+            }
+        }
+
 
         // Input base properties
         public bool IsBinaryInput
@@ -207,6 +270,7 @@ namespace Calculator.UI.ViewModels
         public ICommand? CopyCommand { get; private set; }
         public ICommand? PasteCommand { get; private set; }
         public ICommand? OpenMenuCommand { get; private set; }
+        public ICommand? CloseCommand { get; }
         public ICommand? ClearHistoryCommand { get; private set; }
         public ICommand? ShowHistoryCommand { get; private set; }
         public ICommand? ToggleSignCommand { get; private set; }
@@ -221,6 +285,7 @@ namespace Calculator.UI.ViewModels
             inputValue = string.Empty;
             UpdateDigitAvailability();
             OpenMenuCommand = new RelayCommand(OpenMenu);
+            CloseCommand = new RelayCommand(CloseWindow);
         }
 
         // Remove IHistoryProvider implementation methods since we use HistoryService directly
@@ -249,6 +314,14 @@ namespace Calculator.UI.ViewModels
                 menuWindow.Show();
                 currentWindow.Close();
             }
+        }
+        private void CloseWindow(object? parameter)
+        {
+            // 현재 열려 있는 창을 닫음
+            Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)
+                ?.Close();
         }
         private string GetCurrentBaseString()
         {
